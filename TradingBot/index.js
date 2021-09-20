@@ -1,45 +1,52 @@
-const api = require('./api-management/phemexclient')
-const errorCodes = require('./api-management/phemex-errorcodes.json')
+const orderHandler = require('./api-management/order-handler')
+const errorCodes = require('./api-management/errorcodes.json')
 
 console.log('trading bot is running')
 
-// api.Test()
-let p = 45401;
-let side = 'Sell';
+// orderHandler.Test()
+let p = 43500;
+let side = 'Buy';
 let stopSize = Math.round(p*0.002);
 let sl = side == 'Buy' ? p - stopSize : p + stopSize;
 let tp = Math.round(p + (sl*2*(side == 'Buy' ? 1 : -1)));
 let qty = 1000;
 
-api.PlaceLimitOrder(p, sl, qty, side)
+orderHandler.GetPriceData()
 .then(res => {
-    let orderID = res.data.orderID;
-
-    console.log('orderid: ' + res.data.orderID);
-
-    // when the order is filled
-    // api.PlaceTakeProfitOrder(tp, qty, side == 'Buy' ? 'Sell' : 'Buy')
-    // .then(res => {
-    //     console.log(res);
-    // })
-    // .catch(res => {
-    //     console.log(res);
-    //     api.CancelOrder(orderID)
-    //     .then(res => {
-    //         console.log(res);
-    //     })
-    //     .catch(err => {
-    //         logError(err)
-    //     })
-    // })
+    console.log(res);
 })
 .catch(err => {
-    logError(err)
+    logError(err);
 })
 
+// orderHandler.PlaceLimitOrder(p, sl, qty, side)
+// .then(res => {
+//     let orderID = res.data.orderID;
+
+//     console.log('orderid: ' + res.data.orderID);
+
+//     // when the order is filled
+//     // orderHandler.PlaceTakeProfitOrder(tp, qty, side == 'Buy' ? 'Sell' : 'Buy')
+//     // .then(res => {
+//     //     console.log(res);
+//     // })
+//     // .catch(res => {
+//     //     console.log(res);
+//     //     orderHandler.CancelOrder(orderID)
+//     //     .then(res => {
+//     //         console.log(res);
+//     //     })
+//     //     .catch(err => {
+//     //         logError(err)
+//     //     })
+//     // })
+// })
+// .catch(err => {
+//     logError(err)
+// })
 
 
-// api.CancelAllOrders()
+// orderHandler.CancelAllOrders()
 // .then(res => {
 //     console.log(res);
 // })
@@ -47,12 +54,15 @@ api.PlaceLimitOrder(p, sl, qty, side)
 //     console.log(err);
 // });
 
-// api.CancelOrder('7d112605-a34d-42cf-8987-c4d152d67844')
+// orderHandler.CancelOrder('a32fc277-0aea-43a0-83ac-7a6b93e0e780')
 // .then(res => {
 //     console.log(res);
 // })
+// .catch(err => {
+//     logError(err);
+// })
 
-// api.SetLeverage(5)
+// orderHandler.SetLeverage(5)
 // .then(res => {
 //     console.log('changed leverage: ');
 //     console.log(res);

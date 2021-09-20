@@ -5,15 +5,19 @@ id:
 secret:
     g738_o74vwOA7v1Aiw6cxEgvbHlWp7rUYUtMLFUN3Xc2ZjgzYzgxZS0yODc0LTQ4NTUtODVkOS1lZmM4OWI2NDQ1MjE
 */
-const { PhemexClient } = require("phemex-api");
+
+// unRealizedPnl = (posSize/contractSize) / avgEntryPrice - (posSize/contractSize) / markPrice)
+
+
+const { PhemexClient } = require("./phemex-client");
 
 const ApiKey = "28852450-ca2e-439f-82cd-32082be63390";
 const apiSecret = "g738_o74vwOA7v1Aiw6cxEgvbHlWp7rUYUtMLFUN3Xc2ZjgzYzgxZS0yODc0LTQ4NTUtODVkOS1lZmM4OWI2NDQ1MjE";
 
 const client = new PhemexClient(ApiKey, apiSecret);
 
-function SetLeverage(leverage) {
-    return client.ChangeLeverage({symbol: "BTCUSD", leverage})
+function GetPriceData() {
+    return client.Query24HourTicker({symbol: "BTCUSD"});
 }
 
 function PlaceLimitOrder(orderPrice, stopLoss, quantity, side) {
@@ -79,6 +83,10 @@ function CancelAllOrders() {
     return client.CancelAllOrders({symbol: "BTCUSD"})
 }
 
+function SetLeverage(leverage) {
+    return client.ChangeLeverage({symbol: "BTCUSD", leverage})
+}
+
 const Test = () => {
     client.QueryRecentTrades({symbol: "BTCUSD"})
     .then(result => console.log(result.result.trades))
@@ -86,5 +94,5 @@ const Test = () => {
 }
 
 module.exports = {
-    Test, SetLeverage, PlaceLimitOrder, PlaceTakeProfitOrder, CancelOrder, CancelAllOrders
+    Test, GetPriceData, PlaceLimitOrder, PlaceTakeProfitOrder, CancelOrder, CancelAllOrders, SetLeverage
 }

@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "nodemon": "^2.0.12",
-    "phemex-api": "^1.0.0"
+    "request": "^2.88.2"
   }
 }
