@@ -4,9 +4,10 @@ const errorCodes = require('./api-management/phemex-errorcodes.json')
 console.log('trading bot is running')
 
 // api.Test()
-let p = 47673;
-let side = 'Buy';
-let sl = Math.round(p*0.998);
+let p = 45401;
+let side = 'Sell';
+let stopSize = Math.round(p*0.002);
+let sl = side == 'Buy' ? p - stopSize : p + stopSize;
 let tp = Math.round(p + (sl*2*(side == 'Buy' ? 1 : -1)));
 let qty = 1000;
 
