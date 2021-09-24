@@ -1,5 +1,6 @@
 const orderHandler = require('./api-management/order-handler')
 const errorCodes = require('./api-management/errorcodes.json')
+const chartData = require('./api-management/chartdata-handler')
 
 console.log('trading bot is running')
 
@@ -11,13 +12,15 @@ let sl = side == 'Buy' ? p - stopSize : p + stopSize;
 let tp = Math.round(p + (sl*2*(side == 'Buy' ? 1 : -1)));
 let qty = 1000;
 
-orderHandler.GetPriceData()
-.then(res => {
-    console.log(res);
-})
-.catch(err => {
-    logError(err);
-})
+chartData.GetPriceData();
+
+// orderHandler.GetMarketAnalysis()
+// .then(res => {
+//     console.log(res);
+// })
+// .catch(err => {
+//     logError(err);
+// })
 
 // orderHandler.PlaceLimitOrder(p, sl, qty, side)
 // .then(res => {

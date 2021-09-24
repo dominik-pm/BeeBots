@@ -16,7 +16,7 @@ const apiSecret = "g738_o74vwOA7v1Aiw6cxEgvbHlWp7rUYUtMLFUN3Xc2ZjgzYzgxZS0yODc0L
 
 const client = new PhemexClient(ApiKey, apiSecret);
 
-function GetPriceData() {
+function GetMarketAnalysis() {
     return client.Query24HourTicker({symbol: "BTCUSD"});
 }
 
@@ -94,5 +94,5 @@ const Test = () => {
 }
 
 module.exports = {
-    Test, GetPriceData, PlaceLimitOrder, PlaceTakeProfitOrder, CancelOrder, CancelAllOrders, SetLeverage
+    Test, GetMarketAnalysis, PlaceLimitOrder, PlaceTakeProfitOrder, CancelOrder, CancelAllOrders, SetLeverage
 }
