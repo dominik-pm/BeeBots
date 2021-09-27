@@ -58,6 +58,8 @@ module.exports = class Request {
             }
         }
 
+        // TODO: get hashed api key out of params and decrypt the secret
+
         signature = this.generateSignature(content, this.secret);
 
         const options = {

@@ -7,8 +7,8 @@ const fs = require('fs');
 async function GetRealTimeData() {
     const messages = streamNormalized(
         {
-            exchange: 'bitmex',
-            symbols: ['XBTUSD', 'ETHUSD']
+            exchange: 'phemex',
+            symbols: ['BTCUSD']
         },
         normalizeTrades,
         normalizeBookChanges
@@ -87,5 +87,5 @@ function priceEpToPrice(priceEp) {
 }
 
 module.exports = {
-    GetPriceData
+    GetPriceData, GetRealTimeData
 }

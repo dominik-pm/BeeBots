@@ -12,15 +12,15 @@ let sl = side == 'Buy' ? p - stopSize : p + stopSize;
 let tp = Math.round(p + (sl*2*(side == 'Buy' ? 1 : -1)));
 let qty = 1000;
 
-chartData.GetPriceData();
+//chartData.GetRealTimeData();
 
-// orderHandler.GetMarketAnalysis()
-// .then(res => {
-//     console.log(res);
-// })
-// .catch(err => {
-//     logError(err);
-// })
+orderHandler.GetMarketAnalysis()
+.then(res => {
+    console.log(res);
+})
+.catch(err => {
+    logError(err);
+})
 
 // orderHandler.PlaceLimitOrder(p, sl, qty, side)
 // .then(res => {
