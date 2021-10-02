@@ -27,12 +27,24 @@ app.get('/positionupdate', (req, res) => {
     }
 
     let side = stopLoss < entryPrice ? 'long' : 'short'
-    let newPosition = getPositionUpdate(side, currentPrice, entryPrice, stopLoss, takeProfit)
+    const {stopLoss, newTakeProfit} = getPositionUpdate(side, currentPrice, entryPrice, stopLoss, takeProfit)
+    if (!stopLoss || !newTakeProfit) {
+        console.log('internal error: no stopLoss or newTakeProfit');
+        console.log(`stopLoss: ${stopLoss}`);
+        console.log(`newTakeProfit: ${newTakeProfit}`);
+        res.status(541).send({message: `internal server error!`})
+        return
+    }
+
+    let resObj = {
+        stopLoss,
+        takeProfit: newTakeProfit
+    }
 
     console.log(`responding with:`)
-    console.log(newPosition)
+    console.log(resObj)
 
-    res.status(200).send(newPosition)
+    res.status(200).send(resObj)
 
 })
 
