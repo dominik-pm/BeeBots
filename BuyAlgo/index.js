@@ -1,24 +1,47 @@
-const express = require('express');
-const app = express();
-const port = 8089;
+const express = require('express')
+const app = express()
+const port = 8087
 
-app.use(express.json());
+app.use(express.json())
 
 app.get('/tradecall', (req, res) => {
     console.log(`Tradecall requested at ${currentTime()}!`);
     console.log(req.body);
 
-    // res.status(400).send({
-    //     message: 'You are an idiot'
-    // })
+    const {currentPrice, marketData} = req.body;
+
+    if (!currentPrice) {
+        console.log('currentPrice not given');
+        res.status(431).send({message: `'currentPrice' is required!`})
+        return
+    }
+    if (!marketData) {
+        console.log('marketData not given');
+        res.status(432).send({message: `'marketData' is required!`})
+        return
+    }
+    if (!marketData.dailyLow) {
+        console.log('marketData.dailyLow not given');
+        res.status(432).send({message: `'marketData.dailyLow' is required!`})
+        return
+    }
 
     // res.status(500).send({
     //     message: 'Server error'
     // })
 
+    const {action, confidence} = getTradeCall(currentPrice, marketData);
+    if (!action || !confidence) {
+        console.log('internal error: no action or confidence');
+        console.log(`action: ${action}`);
+        console.log(`confidence: ${confidence}`);
+        res.status(531).send({message: `internal server error!`})
+        return
+    }
+
     let resObj = {
-        action: 'Buy',
-        confidence: Math.random()
+        action,
+        confidence
     }
 
     console.log(`responding with:`);
@@ -50,6 +73,14 @@ app.get('/tradecall', (req, res) => {
 app.listen(port, () => {
     console.log(`BuyAlgo running at localhost:${port}!`);
 })
+
+
+function getTradeCall(currentPrice, marketData) {
+    return {
+        action: 'Buy',
+        confidence: Math.random()
+    }
+}
 
 
 function currentTime() {
