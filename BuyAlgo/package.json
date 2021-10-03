@@ -4,12 +4,16 @@
   "description": "buyalgo service for beebots",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "cross-env NODE_ENV=test jest --watchAll --silent"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "cross-env": "^7.0.3",
+    "express": "^4.17.1",
+    "jest": "^27.2.4",
+    "joi": "^17.4.2",
+    "supertest": "^6.1.6"
   }
 }

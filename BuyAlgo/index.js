@@ -1,42 +1,34 @@
 const express = require('express')
+const Joi = require('joi')
+const { currentTime } = require('./helpers/helperFunctions')
+const { getTradeCall, algDataSchema } = require('./algorithm/rdm')
 const app = express()
-const port = 8087
+const port = process.argv[2] || 8087
 
 app.use(express.json())
 
 app.get('/tradecall', (req, res) => {
     console.log(`Tradecall requested at ${currentTime()}!`);
-    console.log(req.body);
 
-    const {currentPrice, marketData} = req.body;
+    const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
+    console.log(value);
 
-    if (!currentPrice) {
-        console.log('currentPrice not given');
-        res.status(431).send({message: `'currentPrice' is required!`})
-        return
+    if (warning) {
+        console.warn(warning);
     }
-    if (!marketData) {
-        console.log('marketData not given');
-        res.status(432).send({message: `'marketData' is required!`})
-        return
-    }
-    if (!marketData.dailyLow) {
-        console.log('marketData.dailyLow not given');
-        res.status(432).send({message: `'marketData.dailyLow' is required!`})
-        return
+    if (error) {
+        let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
+        throw {status: 431, message: errMsg} // instead of: return res.status(431).send({message: errMsg})
     }
 
-    // res.status(500).send({
-    //     message: 'Server error'
-    // })
+    const {action, confidence} = getTradeCall(req.body);
 
-    const {action, confidence} = getTradeCall(currentPrice, marketData);
     if (!action || !confidence) {
-        console.log('internal error: no action or confidence');
         console.log(`action: ${action}`);
         console.log(`confidence: ${confidence}`);
-        res.status(531).send({message: `internal server error!`})
-        return
+        throw('internal error: no action or confidence');
+        // console.log('internal error: no action or confidence');
+        // res.status(531).send({message: `internal server error!`})
     }
 
     let resObj = {
@@ -70,19 +62,27 @@ app.get('/tradecall', (req, res) => {
 //     });
 // });
 
-app.listen(port, () => {
-    console.log(`BuyAlgo running at localhost:${port}!`);
+// error handling
+app.use(function(err, req, res, next) {
+    // expected error (400)
+    if (err.status) {
+        console.log(err.message)
+        res.status(err.status).json({status: err.status, message: err.message})
+    } 
+    // unexpected error (500)
+    else {
+        console.error(err);
+        res.status(530).json({message: 'internal server error'})
+    }
 })
 
+// when running tests, dont start a server (testscript already does)
+if (process.env.NODE_ENV != 'test') {
 
-function getTradeCall(currentPrice, marketData) {
-    return {
-        action: 'Buy',
-        confidence: Math.random()
-    }
+    app.listen(port, () => {
+        console.log(`BuyAlgo running at localhost:${port}!`);
+    })
+
 }
 
-
-function currentTime() {
-    return new Date().toTimeString().split(' ')[0];
-}
+module.exports = app // for tests
