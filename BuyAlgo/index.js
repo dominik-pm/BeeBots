@@ -1,13 +1,16 @@
+require('dotenv').config({ path: './variables.env' })
+
 const express = require('express')
-const Joi = require('joi')
+const authenticate = require('./middleware/authenticate')
 const { currentTime } = require('./helpers/helperFunctions')
 const { getTradeCall, algDataSchema } = require('./algorithm/rdm')
+const Joi = require('joi')
 const app = express()
 const port = process.argv[2] || 8087
 
 app.use(express.json())
 
-app.get('/tradecall', (req, res) => {
+app.get('/tradecall', authenticate, (req, res) => {
     console.log(`Tradecall requested at ${currentTime()}!`);
 
     const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
