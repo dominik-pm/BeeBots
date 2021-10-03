@@ -1,4 +1,7 @@
 const express = require('express')
+const Joi = require('joi')
+const { currentTime } = require('./helpers/helperFunctions')
+const { updatePosition, algDataSchema } = require('./algorithm/3rbe1')
 const app = express()
 const port = 8088
 
@@ -6,38 +9,30 @@ app.use(express.json())
 
 app.get('/positionupdate', (req, res) => {
     console.log(`Positionupdate requested at ${currentTime()}!`);
-    console.log(req.body);
 
-    const { currentPrice, entryPrice, stopLoss, takeProfit } = req.body
+    const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
+    console.log(value);
 
-    if (!currentPrice) {
-        console.log('currentPrice not given');
-        res.status(441).send({message: `'currentPrice' is required!`})
-        return
+    if (warning) {
+        console.warn(warning);
     }
-    if (!entryPrice) {
-        console.log('entryPrice not given');
-        res.status(442).send({message: `'entryPrice' is required!`})
-        return
-    }
-    if (!stopLoss) {
-        console.log('stopLoss not given');
-        res.status(443).send({message: `'stopLoss' is required!`})
-        return
+    if (error) {
+        let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
+        throw {status: 441, message: errMsg} // instead of: return res.status(441).send({message: errMsg})
     }
 
-    let side = stopLoss < entryPrice ? 'long' : 'short'
-    const {stopLoss, newTakeProfit} = getPositionUpdate(side, currentPrice, entryPrice, stopLoss, takeProfit)
-    if (!stopLoss || !newTakeProfit) {
-        console.log('internal error: no stopLoss or newTakeProfit');
-        console.log(`stopLoss: ${stopLoss}`);
-        console.log(`newTakeProfit: ${newTakeProfit}`);
-        res.status(541).send({message: `internal server error!`})
-        return
+    const {newStopLoss, newTakeProfit} = updatePosition(req.body)
+    
+    if (!newStopLoss || !newTakeProfit) {
+        console.error(`newStopLoss: ${newStopLoss}`);
+        console.error(`newTakeProfit: ${newTakeProfit}`);
+        throw('internal error: no newStopLoss or newTakeProfit')
+        // console.log('internal error: no newStopLoss or newTakeProfit');
+        // return res.status(541).send({message: `internal server error!`})
     }
 
     let resObj = {
-        stopLoss,
+        stopLoss: newStopLoss,
         takeProfit: newTakeProfit
     }
 
@@ -48,26 +43,30 @@ app.get('/positionupdate', (req, res) => {
 
 })
 
-app.listen(port, () => {
-    console.log(`PositionAlgo running at localhost:${port}!`)
+app.use(function(err, req, res, next) {
+    // expected error (400)
+    if (err.status) {
+        console.log(err.message)
+        res.status(err.status).json({status: err.status, message: err.message})
+    } 
+    // unexpected error (500)
+    else {
+        console.error(err);
+        res.status(540).json({message: 'internal server error'})
+    }
 })
 
+// when running tests, dont start a server (testscript already does)
+if (process.env.NODE_ENV != 'test') {
 
-function getPositionUpdate(side, currentPrice, entryPrice, stopLoss, takeProfit) {
-    let newTakeProfit = takeProfit
-    if (!takeProfit) {
-        let stopDistance = entryPrice-stopLoss
-        newTakeProfit = entryPrice + (2*stopDistance)
-    }
+    let server = app.listen(port, () => {
+        let host = server.address().address
+        host = host == '::' ? 'localhost' : host
+        let port = server.address().port
 
-    let newPosition = {
-        stopLoss, newTakeProfit
-    }
+        console.log(`PositionAlgo running at http://${host}:${port}!`)
+    })
 
-    return newPosition
 }
 
-
-function currentTime() {
-    return new Date().toTimeString().split(' ')[0];
-}
+module.exports = app
