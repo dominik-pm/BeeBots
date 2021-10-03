@@ -1,13 +1,16 @@
+require('dotenv').config({ path: './variables.env' })
+
 const express = require('express')
 const Joi = require('joi')
+const authenticate = require('./middleware/authenticate')
 const { currentTime } = require('./helpers/helperFunctions')
 const { updatePosition, algDataSchema } = require('./algorithm/3rbe1')
 const app = express()
-const port = 8088
+const port = process.argv[2] || 8088
 
 app.use(express.json())
 
-app.get('/positionupdate', (req, res) => {
+app.get('/positionupdate', authenticate, (req, res) => {
     console.log(`Positionupdate requested at ${currentTime()}!`);
 
     const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
