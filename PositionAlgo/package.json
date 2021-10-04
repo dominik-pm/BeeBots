@@ -17,6 +17,7 @@
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.13",
+    "request": "^2.88.2",
     "supertest": "^6.1.6"
   }
 }
