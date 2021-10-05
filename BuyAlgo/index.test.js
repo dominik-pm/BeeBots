@@ -1,4 +1,5 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken')
 const app = require('./index')
 
 const token = jwt.sign('testcases', process.env.ACCESS_TOKEN_SECRET)
