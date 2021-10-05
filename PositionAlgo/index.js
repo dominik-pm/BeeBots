@@ -3,28 +3,16 @@ require('dotenv').config({ path: './variables.env' })
 const express = require('express')
 const Joi = require('joi')
 const authenticate = require('./middleware/authenticate')
-const { currentTime } = require('./helpers/helperFunctions')
-const { updatePosition, algDataSchema } = require('./algorithm/3rbe1')
+const {logTime, logErr} = require('./middleware/logger')
+const { updatePosition } = require('./middleware/positionupdate')
 const app = express()
 const port = process.argv[2] || 8088
 
-app.use(express.json())
+app.use(express.json()) // parse 
+app.use(logTime);
 
-app.get('/positionupdate', authenticate, (req, res) => {
-    console.log(`Positionupdate requested at ${currentTime()}!`);
-
-    const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
-    console.log(value);
-
-    if (warning) {
-        console.warn(warning);
-    }
-    if (error) {
-        let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
-        throw {status: 441, message: errMsg} // instead of: return res.status(441).send({message: errMsg})
-    }
-
-    const {newStopLoss, newTakeProfit} = updatePosition(req.body)
+app.get('/positionupdate', authenticate, updatePosition, (req, res) => {
+    const {newStopLoss, newTakeProfit} = req.body.newPosition;
     
     if (!newStopLoss || !newTakeProfit) {
         console.error(`newStopLoss: ${newStopLoss}`);
@@ -39,25 +27,15 @@ app.get('/positionupdate', authenticate, (req, res) => {
         takeProfit: newTakeProfit
     }
 
-    console.log(`responding with:`)
-    console.log(resObj)
+    // console.log(`responding with:`)
+    // console.log(resObj)
 
     res.status(200).send(resObj)
 
 })
 
-app.use(function(err, req, res, next) {
-    // expected error (400)
-    if (err.status) {
-        console.log(err.message)
-        res.status(err.status).json({status: err.status, message: err.message})
-    } 
-    // unexpected error (500)
-    else {
-        console.error(err);
-        res.status(540).json({message: 'internal server error'})
-    }
-})
+app.use(logErr);
+
 
 // when running tests, dont start a server (testscript already does)
 if (process.env.NODE_ENV != 'test') {

@@ -19,8 +19,8 @@ const algDataSchema = Joi.object({
     takeProfit: [Joi.number().greater(0), Joi.allow(null)]
 })
 
-function updatePosition(req) {
-    const { currentPrice, entryPrice, stopLoss, originalStopLoss, takeProfit } = req;
+function getNewPosition(data) {
+    const { currentPrice, entryPrice, stopLoss, originalStopLoss, takeProfit } = data;
 
     let newTakeProfit = takeProfit;
     let newStopLoss = stopLoss;
@@ -50,5 +50,5 @@ function updatePosition(req) {
 }
 
 module.exports = {
-    updatePosition, algDataSchema
+    getNewPosition, algDataSchema
 };

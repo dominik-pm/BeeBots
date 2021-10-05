@@ -15,8 +15,8 @@ const algDataSchema = Joi.object({
     stopLoss: Joi.number().greater(0).required()
 })
 
-function updatePosition(req) {
-    const { entryPrice, stopLoss } = req;
+function updatePosition(data) {
+    const { entryPrice, stopLoss } = data;
     
     let stopDistance = entryPrice-stopLoss;
     
