@@ -1,10 +1,17 @@
 const request = require('supertest');
 const app = require('./index')
 
+const token = jwt.sign('testcases', process.env.ACCESS_TOKEN_SECRET)
+
+const headers = {
+    'Authorization': `Bearer ${token}`
+}
+
 describe('trade call', () => {
     it('GET /tradecall --> validate response body', () => {
         return request(app)
             .get('/tradecall')
+            .set(headers)
             .send({
 
             })
