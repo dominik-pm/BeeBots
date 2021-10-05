@@ -2,29 +2,16 @@ require('dotenv').config({ path: './variables.env' })
 
 const express = require('express')
 const authenticate = require('./middleware/authenticate')
-const { currentTime } = require('./helpers/helperFunctions')
-const { getTradeCall, algDataSchema } = require('./algorithm/rdm')
-const Joi = require('joi')
+const { logTime, logErr } = require('./middleware/logger')
+const { tradeCall } = require('./middleware/tradecall')
 const app = express()
 const port = process.argv[2] || 8087
 
 app.use(express.json())
+app.use(logTime);
 
-app.get('/tradecall', authenticate, (req, res) => {
-    console.log(`Tradecall requested at ${currentTime()}!`);
-
-    const {value, error, warning} = algDataSchema.validate(req.body, {allowUnknown: true})
-    console.log(value);
-
-    if (warning) {
-        console.warn(warning);
-    }
-    if (error) {
-        let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
-        throw {status: 431, message: errMsg} // instead of: return res.status(431).send({message: errMsg})
-    }
-
-    const {action, confidence} = getTradeCall(req.body);
+app.get('/tradecall', tradeCall, authenticate, (req, res) => {
+    const {action, confidence} = req.body.tradeCall;
 
     if (!action || !confidence) {
         console.log(`action: ${action}`);
@@ -39,11 +26,7 @@ app.get('/tradecall', authenticate, (req, res) => {
         confidence
     }
 
-    console.log(`responding with:`);
-    console.log(resObj);
-
     res.status(200).send(resObj)
-
 });
 
 // app.post('/assignment', (req, res) => {
@@ -65,19 +48,7 @@ app.get('/tradecall', authenticate, (req, res) => {
 //     });
 // });
 
-// error handling
-app.use(function(err, req, res, next) {
-    // expected error (400)
-    if (err.status) {
-        console.log(err.message)
-        res.status(err.status).json({status: err.status, message: err.message})
-    } 
-    // unexpected error (500)
-    else {
-        console.error(err);
-        res.status(530).json({message: 'internal server error'})
-    }
-})
+app.use(logErr);
 
 // when running tests, dont start a server (testscript already does)
 if (process.env.NODE_ENV != 'test') {

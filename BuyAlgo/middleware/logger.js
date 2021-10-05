@@ -33,7 +33,7 @@ function logErr(err, req, res, next) {
     // unexpected error (500)
     else {
         console.error(err);
-        res.status(540).json({message: 'internal server error'})
+        res.status(530).json({message: 'internal server error'})
     }
 }
 
