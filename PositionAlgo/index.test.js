@@ -9,32 +9,32 @@ const headers = {
 }
 
 describe('position update', () => {
-    it('GET /positionupdate --> 441 if no currentPrice given', () => {
+    it('GET /positionupdate --> 400 if no currentPrice given', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
             .send({})
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if currentPrice is of a bad type', () => {
+    it('GET /positionupdate --> 400 if currentPrice is of a bad type', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
             .send({
                 currentPrice: '46000'
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if no entryPrice given', () => {
+    it('GET /positionupdate --> 400 if no entryPrice given', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
             .send({
                 currentPrice: 46000.5
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if entryPrice is of a bad type', () => {
+    it('GET /positionupdate --> 400 if entryPrice is of a bad type', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
@@ -42,9 +42,9 @@ describe('position update', () => {
                 currentPrice: 46000,
                 entryPrice: '46000'
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if no stopLoss given', () => {
+    it('GET /positionupdate --> 400 if no stopLoss given', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
@@ -52,9 +52,9 @@ describe('position update', () => {
                 currentPrice: 46000,
                 entryPrice: 46000
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if stopLoss is of a bad type', () => {
+    it('GET /positionupdate --> 400 if stopLoss is of a bad type', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
@@ -63,9 +63,9 @@ describe('position update', () => {
                 entryPrice: 46000,
                 stopLoss: {stopLoss: 45000}
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if originalstopLoss is not given', () => {
+    it('GET /positionupdate --> 400 if originalstopLoss is not given', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
@@ -74,9 +74,9 @@ describe('position update', () => {
                 entryPrice: 46000,
                 stopLoss: 45000
             })
-            .expect(441)
+            .expect(400)
     })
-    it('GET /positionupdate --> 441 if originalstopLoss is of a bad type', () => {
+    it('GET /positionupdate --> 400 if originalstopLoss is of a bad type', () => {
         return request(app)
             .get('/positionupdate')
             .set(headers)
@@ -86,7 +86,7 @@ describe('position update', () => {
                 stopLoss: 45000,
                 originalstopLoss: "string"
             })
-            .expect(441)
+            .expect(400)
     })
 
     it('GET /positionupdate --> validates reponse body', () => {

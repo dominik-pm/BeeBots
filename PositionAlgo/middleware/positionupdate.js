@@ -8,7 +8,7 @@ function updatePosition(req, res, next) {
     }
     if (error) {
         let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
-        throw {status: 441, message: errMsg} // logger takes care of errors -> instead of: return res.status(441).send({message: errMsg})
+        throw {status: 400, message: errMsg} // logger takes care of errors -> instead of: return res.status(400).send({message: errMsg})
     }
 
     req.body.newPosition = getNewPosition(value);
