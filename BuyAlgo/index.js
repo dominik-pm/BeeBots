@@ -17,8 +17,6 @@ app.get('/tradecall', tradeCall, authenticate, (req, res) => {
         console.log(`action: ${action}`);
         console.log(`confidence: ${confidence}`);
         throw('internal error: no action or confidence');
-        // console.log('internal error: no action or confidence');
-        // res.status(531).send({message: `internal server error!`})
     }
 
     let resObj = {

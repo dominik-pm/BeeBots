@@ -8,6 +8,16 @@ const headers = {
     'Authorization': `Bearer ${token}`
 }
 
+describe('Authorization', () => {
+    it('GET /tradecall --> validate response body', () => {
+        return request(app)
+            .get('/tradecall')
+            .send({})
+            .expect('Content-Type', /json/)
+            .expect(401)
+    })
+})
+
 describe('trade call', () => {
     it('GET /tradecall --> validate response body', () => {
         return request(app)
