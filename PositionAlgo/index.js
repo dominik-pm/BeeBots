@@ -28,6 +28,10 @@ app.get('/positionupdate', authenticate, updatePosition, (req, res) => {
 
 })
 
+app.get('/*', (req, res) => {
+    throw {status: 404, message: 'Not found'}
+})
+
 app.use(logErr);
 
 

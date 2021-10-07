@@ -66,10 +66,21 @@ function logResponse(res, callback) {
         //     referer: req.headers.referer || '',
         //     ua: req.headers['user-agent']
         // });
-
-        callback(JSON.parse(body));
-        oldEnd.apply(res, restArgs);
+        
+        if (isValidJson(body)) {
+            callback(JSON.parse(body));
+            oldEnd.apply(res, restArgs);
+        }
     };
+}
+
+function isValidJson(str) {
+    try {
+        JSON.parse(str);
+    } catch {
+        return false;
+    }
+    return true;
 }
 
 module.exports = {
