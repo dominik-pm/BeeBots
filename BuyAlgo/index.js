@@ -46,6 +46,10 @@ app.get('/tradecall', tradeCall, authenticate, (req, res) => {
 //     });
 // });
 
+app.get('/*', (req, res) => {
+    throw {status: 404, message: 'Not found'}
+})
+
 app.use(logErr);
 
 // when running tests, dont start a server (testscript already does)

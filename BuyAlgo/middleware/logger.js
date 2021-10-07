@@ -67,9 +67,20 @@ function logResponse(res, callback) {
         //     ua: req.headers['user-agent']
         // });
 
-        callback(JSON.parse(body));
-        oldEnd.apply(res, restArgs);
+        if (isJsonString(body)) {
+            callback(JSON.parse(body));
+            oldEnd.apply(res, restArgs);
+        }
     };
+}
+
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }
 
 module.exports = {

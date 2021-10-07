@@ -8,7 +8,7 @@ function tradeCall(req, res, next) {
     }
     if (error) {
         let errMsg = error.details[0].message.replace('"', '\'').replace('"', '\'')
-        throw {status: 431, message: errMsg} // instead of: return res.status(431).send({message: errMsg})
+        throw {status: 400, message: errMsg} // instead of: return res.status(400).send({message: errMsg})
     }
 
     req.body.tradeCall = getTradeCall(value);
