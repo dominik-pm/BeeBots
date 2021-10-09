@@ -25,15 +25,15 @@ function currentTime() {
 
 // is called when an error occures (by script error or throw)
 function logErr(err, req, res, next) {
-    // expected error (400)
+    // bad request error (400)
     if (err.status) {
         console.log(err.message)
         res.status(err.status).json({status: err.status, message: err.message})
     } 
-    // unexpected error (500)
+    // unexpected/expected server error (500)
     else {
         console.error(err);
-        res.status(530).json({message: 'internal server error'})
+        res.status(500).json({message: 'internal server error'})
     }
 }
 
