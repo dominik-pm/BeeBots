@@ -1,17 +1,45 @@
-// require('dotenv').config({ path: './variables.env' })
-
-import express, {Application, Request, Response, NextFunction} from 'express';
+import dotenv from 'dotenv';
+import express, {Application, Request, Response, NextFunction } from 'express';
 import authenticate from './middleware/authenticate';
+import { logErr, logTime } from './middleware/logger';
+import { getAccountInfo, getMarketAnalysis } from './middleware/phemexhandler';
 
-const app: Application = express();
+dotenv.config({path: './variables.env'})
+
+export const app: Application = express();
 const port: String | Number = process.argv[2] || 8085;
 
+app.use(express.json()); 
+app.use(logTime);
 
-
-app.get('/', authenticate, (req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
     res.status(200).send({message: 'working'})
 })
 
+app.get('/marketAnalysis', authenticate, getMarketAnalysis, (req: any, res: Response) => {
+    let resObj = req.toSend;
+    if (!resObj) {
+        console.log('got nothing to send')
+        res.status(200)
+    }
+    res.status(200).send(req.toSend)
+})
+
+app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
+    let resObj = req.toSend;
+    if (!resObj) {
+        console.log('got nothing to send')
+        res.status(200)
+    }
+    res.status(200).send({message: 'working'})
+})
+
+
+app.get('/*', (req, res) => {
+    throw {status: 404, message: 'Not found'}
+})
+
+app.use(logErr);
 
 // when running tests, dont start a server (testscript already does)
 if (process.env.NODE_ENV != 'test') {
@@ -26,5 +54,3 @@ if (process.env.NODE_ENV != 'test') {
     })
 
 }
-
-module.exports = app
