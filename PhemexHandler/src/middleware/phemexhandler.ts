@@ -6,19 +6,6 @@ import { EncryptionObject } from '../@types/crypt';
 import { PhemexRequestOptions } from '../@types/request';
 import errorCodes from './phemexclient/errorcode.json';
 
-export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
-    PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
-    .then((data: any) => {
-        const result: any = handleResponse(data)
-        req.toSend = result
-        next()
-    })
-    .catch((err) => {
-        console.log(err)
-        throw(err)
-    })
-}
-
 interface Payload {
     iv: string,
     encryptedData: string,
@@ -29,13 +16,52 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
+    PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
+    .then((data: any) => {
+        req.toSend = handleResponse(data)
+        next()
+    })
+    .catch((err) => {
+        console.log(err)
+        throw(err)
+    })
+}
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
-    // TODO: function? or middleware?
-    const token = req.token;
-    
+    const options = decryptOptions(req.token);
+
+    PhemexClient.QueryTradingAccountAndPositions({symbol: 'BTCUSD', currency: 'BTC'}, options)
+    .then((data: any) => {
+        req.toSend = handleResponse(data)
+        next()
+    })
+    .catch((err) => {
+        console.log('phemex responded with error:', err)
+        let msg = logErrorCode(err)
+        throw(msg)
+    })
+}
+export function getTrades(req: any, res: Response, next: NextFunction) {
+    const options = decryptOptions(req.token);
+
+    PhemexClient.QueryUserTrades({}, options)
+    .then((data: any) => {
+        req.toSend = handleResponse(data)
+        next()
+    })
+    .catch((err) => {
+        console.log('phemex responded with error:', err)
+        let msg = logErrorCode(err)
+        throw(msg)
+    })
+}
+
+
+
+function decryptOptions(token: string) {
     // get payload out of token
     let payload = <Payload>jwt.decode(token)
-    console.log('payload: ', payload)
+    // console.log('payload: ', payload)
 
     let encrypted: EncryptionObject = {
         iv: payload.iv,
@@ -48,21 +74,9 @@ export function getAccountInfo(req: any, res: Response, next: NextFunction) {
         secret: decryptedKeys.apiSecretKey,
         isLivenet: payload.isLivenet
     }
-    // <-- TODO:
 
-    PhemexClient.QueryTradingAccountAndPositions({symbol: 'BTCUSD', currency: 'BTC'}, options)
-    .then((data: any) => {
-        const result: any = handleResponse(data)
-        req.toSend = result
-        next()
-    })
-    .catch((err) => {
-        console.log('phemex responded with error: ' + err)
-        let msg = logErrorCode(err)
-        throw(msg)
-    })
+    return options;
 }
-
 function logErrorCode(code: string): string {
     let codes: any = errorCodes;
     let error = codes[code];
@@ -74,7 +88,6 @@ function logErrorCode(code: string): string {
     }
     return error.details;
 }
-
 function handleResponse(res: any) {
     const { error, result } = res
     if (error) {

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express, {Application, Request, Response, NextFunction } from 'express';
 import authenticate from './middleware/authenticate';
 import { logErr, logTime } from './middleware/logger';
-import { getAccountInfo, getMarketAnalysis } from './middleware/phemexhandler';
+import { getAccountInfo, getMarketAnalysis, getTrades } from './middleware/phemexhandler';
 
 dotenv.config({path: './variables.env'})
 
@@ -24,16 +24,22 @@ app.get('/marketAnalysis', authenticate, getMarketAnalysis, (req: any, res: Resp
     }
     res.status(200).send(req.toSend)
 })
-
 app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
     let resObj = req.toSend;
     if (!resObj) {
         console.log('got nothing to send')
         res.status(200)
     }
-    res.status(200).send({message: 'working'})
+    res.status(200).send(resObj)
 })
-
+app.get('/userTrades', authenticate, getTrades, (req: any, res: Response) => {
+    let resObj = req.toSend;
+    if (!resObj) {
+        console.log('got nothing to send')
+        res.status(200)
+    }
+    res.status(200).send(resObj)
+})
 
 app.get('/*', (req, res) => {
     throw {status: 404, message: 'Not found'}

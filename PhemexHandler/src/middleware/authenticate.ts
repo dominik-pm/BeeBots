@@ -14,7 +14,7 @@ export default function authenticate(req: any, res: Response, next: NextFunction
     }
 
     try {
-        jwt.verify(token, secret, {algorithms: ['HS256', 'RS256']}, (err: any, payload: any) => {
+        jwt.verify(token, secret, {algorithms: ['HS256']}, (err: any, payload: any) => {
             if (err) {
                 throw {status: 401, message: 'Authentication failed!'}
             }
