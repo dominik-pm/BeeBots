@@ -52,7 +52,7 @@ export function getTrades(req: any, res: Response, next: NextFunction) {
     .catch((err) => {
         console.log('phemex responded with error:', err)
         let msg = logErrorCode(err)
-        throw(msg)
+        throw({message: msg})
     })
 }
 
@@ -84,9 +84,13 @@ function logErrorCode(code: string): string {
         console.log(error.message);
         console.log(error.details);
     } else {
-        console.log("no details with that error code");
+        console.log(code);
     }
-    return error.details;
+    if (error) {
+        return error.details;
+    } else {
+        return code;
+    }
 }
 function handleResponse(res: any) {
     const { error, result } = res
