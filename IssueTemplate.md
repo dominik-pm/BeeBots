@@ -1,5 +1,7 @@
 # Interface:
 ## /tradecall
+> to get a tradecall that says whether to 'Buy' or 'Sell' with the current market data
+
 Request Data:
 ```javascript
 {
