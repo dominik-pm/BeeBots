@@ -25,4 +25,5 @@ todo
 - [ ] implement more (complex) buyAlgos
 
 test todo
-- [ ] test response data + error codes
+- [ ] test response data
+- [ ] test error codes on wrong request data
