@@ -20,10 +20,10 @@ Response Data:
     "confidence": Number        // 0.0-1.0
 }
 ```
-# Todo
+Todo:
 - [ ] implement a basic buyAlgo for testing
 - [ ] implement more (complex) buyAlgos
 
-# Test cases
+Test cases:
 - [ ] test response data
 - [ ] test error codes on wrong request data
