@@ -16,6 +16,10 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+export function test() {
+    return PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
+}
+
 export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
     PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
     .then((data: any) => {
