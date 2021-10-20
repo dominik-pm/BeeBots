@@ -37,6 +37,7 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
     // Define variables
     let expiry = Date.now() + 60000;
     let baseURL = urls[options.isLivenet ? 'livenet' : 'testnet'];
+    console.log(options)
     let signature;
     let content = '';
 
@@ -76,6 +77,7 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
             'x-phemex-request-signature': signature,
         }
     }
+    console.log([baseURL, endpoint].join(''))
 
     if (method === 'GET' || method === 'PUT' || method === 'DELETE') {
         if (params) {
