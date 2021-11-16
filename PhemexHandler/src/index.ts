@@ -2,7 +2,8 @@ import dotenv from 'dotenv';
 import express, {Application, Request, Response, NextFunction } from 'express';
 import authenticate from './middleware/authenticate';
 import { logErr, logTime } from './middleware/logger';
-import { getAccountInfo, getMarketAnalysis, getTrades, test } from './middleware/phemexhandler';
+import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler';
+import { StartLiveData } from './middleware/phemexclient/phemex-livedata'
 
 dotenv.config({path: './variables.env'})
 
@@ -11,41 +12,41 @@ const port: String | Number = process.argv[2] || 8085;
 
 app.use(express.json()); 
 app.use(logTime);
+app.use((req: any, res: Response, next: NextFunction) => {
+    req.toSend = {};
+    next()
+})
 
-test()
-.then((data: any) => {
-    console.log(data)
-})
-.catch((err) => {
-    console.log(err)
-})
+// test()
+// .then((data: any) => {
+//     console.log(data)
+// })
+// .catch((err) => {
+//     console.log(err)
+// })
 
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send({message: 'working'})
 })
 
-app.get('/marketAnalysis', authenticate, getMarketAnalysis, (req: any, res: Response) => {
-    let resObj = req.toSend;
-    if (!resObj) {
-        console.log('got nothing to send')
-        res.status(200)
-    }
-    res.status(200).send(req.toSend)
+app.get('/marketdata', authenticate, getMarketAnalysis, getPrice, (req: any, res: Response) => {
+    let resObj = getResObject(req, res)
+    res.status(200).send(resObj)
 })
-app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
-    let resObj = req.toSend;
-    if (!resObj) {
-        console.log('got nothing to send')
-        res.status(200)
+app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
+    let resObj = getResObject(req, res);
+    if (!req.toSend.currentPrice) {
+        throw {status: 400, message: 'Not ready yet!'}
     }
     res.status(200).send(resObj)
 })
+
+app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
+    let resObj = getResObject(req, res)
+    res.status(200).send(resObj)
+})
 app.get('/userTrades', authenticate, getTrades, (req: any, res: Response) => {
-    let resObj = req.toSend;
-    if (!resObj) {
-        console.log('got nothing to send')
-        res.status(200)
-    }
+    let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
 
@@ -62,9 +63,21 @@ if (process.env.NODE_ENV != 'test') {
         let host = 'localhost';
         // host = server.address().host;
         host = host == '::' ? 'localhost' : host
-        let p = port;
+        let p = port
 
         console.log(`PhemexHandler running at http://${host}:${p}!`)
+
+        StartLiveData()
     })
 
+}
+
+
+function getResObject(req: any, res: Response) {
+    let resObj = req.toSend
+    if (!resObj) {
+        res.status(200)
+        console.log('No response data')
+    }
+    return resObj
 }

@@ -5,6 +5,7 @@ import { decryptToJSON } from '../helper/crypt';
 import { EncryptionObject } from '../@types/crypt';
 import { PhemexRequestOptions } from '../@types/request';
 import errorCodes from './phemexclient/errorcode.json';
+import { livePrice } from './phemexclient/phemex-livedata';
 
 interface Payload {
     iv: string,
@@ -23,7 +24,7 @@ export function test() {
 export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
     PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
     .then((data: any) => {
-        req.toSend = handleResponse(data)
+        req.toSend.marketData = handleResponse(data)
         next()
     })
     .catch((err) => {
@@ -31,6 +32,12 @@ export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
         throw(err)
     })
 }
+export function getPrice(req: any, res: Response, next: NextFunction) {
+    req.toSend.currentPrice = livePrice
+    next()
+}
+
+
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token);
 
