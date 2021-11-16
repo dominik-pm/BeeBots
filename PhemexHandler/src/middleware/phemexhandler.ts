@@ -4,7 +4,7 @@ import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import { decryptToJSON } from '../helper/crypt';
 import { EncryptionObject } from '../@types/crypt';
 import { PhemexRequestOptions } from '../@types/request';
-import errorCodes from './phemexclient/errorcode.json';
+import errorCodes from './phemexclient/errorcodes.json';
 import { livePrice } from './phemexclient/phemex-livedata';
 
 interface Payload {
@@ -17,8 +17,19 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+
 export function test() {
-    return PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
+    const options: PhemexRequestOptions = {
+        apiKey: "ea7308fd-c9d6-4884-ad92-da6b8cd6aaa9",
+        secret: "gx2-UEdHM2ZIj_gRpKfm1YmbptZwq7nxGDXrWkR48t1mNzRlYWM0Ny1hMTBhLTRlYzQtYmY1Ni1jNjI2YjE3ODYxYzU",
+        isLivenet: false
+    };
+
+    return testCcxt();
+
+    // return PhemexClient.QueryTradingAccountAndPositions({symbol: 'BTCUSD', currency: 'BTC'}, options)
+
+    // return PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
 }
 
 export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
@@ -69,7 +80,7 @@ export function getTrades(req: any, res: Response, next: NextFunction) {
 
 
 
-function decryptOptions(token: string) {
+function decryptOptions(token: string): PhemexRequestOptions {
     // get payload out of token
     let payload = <Payload>jwt.decode(token)
     // console.log('payload: ', payload)
