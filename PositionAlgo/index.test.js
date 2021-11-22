@@ -8,7 +8,24 @@ const headers = {
     'Authorization': `Bearer ${token}`
 }
 
-describe('position update', () => {
+describe('Position Algo API working', () => {
+
+    it('GET / --> status 200 working', () => {
+        return request(app)
+            .get('/')
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .then((res) => {
+                expect(res.body).toEqual(expect.objectContaining({
+                    message: 'working'
+                }))
+            })
+    })
+
+})
+
+
+describe('Position Algo position update', () => {
     it('GET /positionupdate --> 400 if no currentPrice given', () => {
         return request(app)
             .get('/positionupdate')
@@ -109,13 +126,6 @@ describe('position update', () => {
                 }))
             })
     })
-
-    // request()
-    //     .expect('Content-Type', '/json/')
-    //     .expect(200)
-    //     .end(function(err, res) {
-    //         if (err) throw err
-    //     })
 })
 
 /*
@@ -390,7 +400,7 @@ describe('Algo specific response 2RBE1', () => {
 })
 */
 
-/*
+
 describe('Algo specific response 3RBE1', () => {
     it('GET /positionupdate --> validate 3:1 short takeprofit (42000)', () => {
         return request(app)
@@ -473,4 +483,3 @@ describe('Algo specific response 3RBE1', () => {
             })
     })
 })
-*/

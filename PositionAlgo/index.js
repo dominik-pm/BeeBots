@@ -7,14 +7,18 @@ const { updatePosition } = require('./middleware/positionupdate')
 const app = express()
 const port = process.argv[2] || 8088
 
-app.use(express.json()); 
-app.use(logTime);
+app.use(express.json())
+app.use(logTime)
+
+app.get('/', (req, res) => {
+    res.status(200).send({message: 'working'})
+})
 
 app.get('/positionupdate', authenticate, updatePosition, (req, res) => {
-    const {newStopLoss, newTakeProfit} = req.body.newPosition;
+    const {newStopLoss, newTakeProfit} = req.body.newPosition
     
     if (!newStopLoss || !newTakeProfit) {
-        console.error(`newStopLoss: ${newStopLoss}`);
+        console.error(`newStopLoss: ${newStopLoss}`)
         console.error(`newTakeProfit: ${newTakeProfit}`);
         throw('internal error: no newStopLoss or newTakeProfit')
     }
