@@ -36,7 +36,7 @@ app.get('/marketdata', authenticate, getMarketAnalysis, getPrice, (req: any, res
 app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
     let resObj = getResObject(req, res);
     if (!req.toSend.currentPrice) {
-        throw {status: 400, message: 'Not ready yet!'}
+        //throw {status: 400, message: 'Not ready yet!'}
     }
     res.status(200).send(resObj)
 })

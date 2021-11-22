@@ -6,6 +6,7 @@ import { EncryptionObject } from '../@types/crypt';
 import { PhemexRequestOptions } from '../@types/request';
 import errorCodes from './phemexclient/errorcodes.json';
 import { livePrice } from './phemexclient/phemex-livedata';
+import testCcxt from './phemexclient/phemex-api-req-ccxt';
 
 interface Payload {
     iv: string,
