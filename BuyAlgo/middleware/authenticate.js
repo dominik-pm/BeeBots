@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-console.log('auth token: ' + jwt.sign('nix', process.env.ACCESS_TOKEN_SECRET));
+// console.log('auth token: ' + jwt.sign('nix', process.env.ACCESS_TOKEN_SECRET));
 
 const authenticate = (req, res, next) => {
     try {

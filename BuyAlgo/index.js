@@ -10,6 +10,10 @@ const port = process.argv[2] || 8087
 app.use(express.json())
 app.use(logTime);
 
+app.get('/', (req, res) => {
+    res.status(200).send({message: 'working'})
+})
+
 app.get('/tradecall', tradeCall, authenticate, (req, res) => {
     const {action, confidence} = req.body.tradeCall;
 
@@ -26,25 +30,6 @@ app.get('/tradecall', tradeCall, authenticate, (req, res) => {
 
     res.status(200).send(resObj)
 });
-
-// app.post('/assignment', (req, res) => {
-//     request.post({
-//         headers: {'content-type': 'application/json'},
-//         url: `${heroesService}/hero/${req.body.heroId}`,
-//         body: `{
-//             "busy": true
-//         }`
-//     }, (err, heroResponse, body) => {
-//         if (!err) {
-//             const threatId = parseInt(req.body.threatId);
-//             const threat = threats.find(subject => subject.id === threatId);
-//             threat.assignedHero = req.body.heroId;
-//             res.status(202).send(threat);
-//         } else {
-//             res.status(400).send({problem: `Hero Service responded with issue ${err}`});
-//         }
-//     });
-// });
 
 app.get('/*', (req, res) => {
     throw {status: 404, message: 'Not found'}

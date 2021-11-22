@@ -8,17 +8,29 @@ const headers = {
     'Authorization': `Bearer ${token}`
 }
 
-describe('Authorization', () => {
-    it('GET /tradecall --> validate response body', () => {
+describe('Buy Algo API working', () => {
+
+    it('GET / --> status 200 working', () => {
         return request(app)
-            .get('/tradecall')
-            .send({})
+            .get('/')
+            .expect(200)
             .expect('Content-Type', /json/)
-            .expect(401)
+            .then((res) => {
+                expect(res.body).toEqual(expect.objectContaining({
+                    message: 'working'
+                }))
+            })
+    })
+
+})
+
+describe('Buy Algo Authorization', () => {
+    it('GET /tradecall --> authorization error', () => {
+        return request(app).get('/tradecall').expect(401)
     })
 })
 
-describe('trade call', () => {
+describe('Buy Algo trade call', () => {
     it('GET /tradecall --> validate response body', () => {
         return request(app)
             .get('/tradecall')
