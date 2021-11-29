@@ -1,0 +1,558 @@
+{
+    "19999": {
+        "message": "REQUEST_IS_DUPLICATED",
+        "details": "Duplicated request ID"
+    },
+    "10001": {
+        "message": "OM_DUPLICATE_ORDERID",
+        "details": "Duplicated order ID"
+    },
+    "10002": {
+        "message": "OM_ORDER_NOT_FOUND",
+        "details": "Cannot find order ID"
+    },
+    "10003": {
+        "message": "OM_ORDER_PENDING_CANCEL",
+        "details": "Cannot cancel while order is already in pending cancel status"
+    },
+    "10004": {
+        "message": "OM_ORDER_PENDING_REPLACE",
+        "details": "Cannot cancel while order is already in pending cancel status"
+    },
+    "10005": {
+        "message": "OM_ORDER_PENDING",
+        "details": "Cannot cancel while order is already in pending cancel status"
+    },
+    "10500": {
+        "message": "API Key not found.",
+        "details": "judenerror"
+    },
+    "11001": {
+        "message": "TE_NO_ENOUGH_AVAILABLE_BALANCE",
+        "details": "Insufficient available balance"
+    },
+    "11002": {
+        "message": "TE_INVALID_RISK_LIMIT",
+        "details": "Invalid risk limit value"
+    },
+    "11003": {
+        "message": "TE_NO_ENOUGH_BALANCE_FOR_NEW_RISK_LIMIT",
+        "details": "Insufficient available balance"
+    },
+    "11004": {
+        "message": "TE_INVALID_LEVERAGE",
+        "details": "invalid input or new leverage is over maximum allowed leverage"
+    },
+    "11005": {
+        "message": "TE_NO_ENOUGH_BALANCE_FOR_NEW_LEVERAGE",
+        "details": "Insufficient available balance"
+    },
+    "11006": {
+        "message": "TE_CANNOT_CHANGE_POSITION_MARGIN_WITHOUT_POSITION",
+        "details": "Position size is zero. Cannot change margin"
+    },
+    "11007": {
+        "message": "TE_CANNOT_CHANGE_POSITION_MARGIN_FOR_CROSS_MARGIN",
+        "details": "Cannot change margin under CrossMargin"
+    },
+    "11008": {
+        "message": "TE_CANNOT_REMOVE_POSITION_MARGIN_MORE_THAN_ADDED",
+        "details": "exceeds the maximum removable Margin"
+    },
+    "11009": {
+        "message": "TE_CANNOT_REMOVE_POSITION_MARGIN_DUE_TO_UNREALIZED_PNL",
+        "details": "exceeds the maximum removable Margin"
+    },
+    "11010": {
+        "message": "TE_CANNOT_ADD_POSITION_MARGIN_DUE_TO_NO_ENOUGH_AVAILABLE_BALANCE",
+        "details": "Insufficient available balance"
+    },
+    "11011": {
+        "message": "TE_REDUCE_ONLY_ABORT",
+        "details": "Cannot accept reduce only order"
+    },
+    "11012": {
+        "message": "TE_REPLACE_TO_INVALID_QTY",
+        "details": "Order quantity Error"
+    },
+    "11013": {
+        "message": "TE_CONDITIONAL_NO_POSITION",
+        "details": "Position size is zero. Cannot determine conditional order's quantity"
+    },
+    "11014": {
+        "message": "TE_CONDITIONAL_CLOSE_POSITION_WRONG_SIDE",
+        "details": "Close position conditional order has the same side"
+    },
+    "11015": {
+        "message": "TE_CONDITIONAL_TRIGGERED_OR_CANCELED"
+    },
+    "11016": {
+        "message": "TE_ADL_NOT_TRADING_REQUESTED_ACCOUNT",
+        "details": "Request is routed to the wrong trading engine"
+    },
+    "11017": {
+        "message": "TE_ADL_CANNOT_FIND_POSITION",
+        "details": "Cannot find requested position on current account"
+    },
+    "11018": {
+        "message": "TE_NO_NEED_TO_SETTLE_FUNDING",
+        "details": "The current account does not need to pay a funding fee"
+    },
+    "11019": {
+        "message": "TE_FUNDING_ALREADY_SETTLED",
+        "details": "The current account already pays the funding fee"
+    },
+    "11020": {
+        "message": "TE_CANNOT_TRANSFER_OUT_DUE_TO_BONUS",
+        "details": "Withdraw to wallet needs to remove all remaining bonus. However if bonus is used by position or order cost, withdraw fails."
+    },
+    "11021": {
+        "message": "TE_INVALID_BONOUS_AMOUNT",
+        "details": "Invalid bonus amount; Grpc command cannot be negative number"
+    },
+    "11022": {
+        "message": "TE_REJECT_DUE_TO_BANNED",
+        "details": "Account is banned"
+    },
+    "11023": {
+        "message": "TE_REJECT_DUE_TO_IN_PROCESS_OF_LIQ",
+        "details": "Account is in the process of liquidation"
+    },
+    "11024": {
+        "message": "TE_REJECT_DUE_TO_IN_PROCESS_OF_ADL",
+        "details": "Account is in the process of auto-deleverage"
+    },
+    "11025": {
+        "message": "TE_ROUTE_ERROR",
+        "details": "Request is routed to the wrong trading engine"
+    },
+    "11026": {
+        "message": "TE_UID_ACCOUNT_MISMATCH"
+    },
+    "11027": {
+        "message": "TE_SYMBOL_INVALID",
+        "details": "Invalid number ID or name"
+    },
+    "11028": {
+        "message": "TE_CURRENCY_INVALID",
+        "details": "Invalid currency ID or name"
+    },
+    "11029": {
+        "message": "TE_ACTION_INVALID",
+        "details": "Unrecognized request type"
+    },
+    "11030": {
+        "message": "TE_ACTION_BY_INVALID"
+    },
+    "11031": {
+        "message": "TE_SO_NUM_EXCEEDS",
+        "details": "Number of total conditional orders exceeds the max limit"
+    },
+    "11032": {
+        "message": "TE_AO_NUM_EXCEEDS",
+        "details": "Number of total active orders exceeds the max limit"
+    },
+    "11033": {
+        "message": "TE_ORDER_ID_DUPLICATE",
+        "details": "Duplicated order ID"
+    },
+    "11034": {
+        "message": "TE_SIDE_INVALID",
+        "details": "Invalid side"
+    },
+    "11035": {
+        "message": "TE_ORD_TYPE_INVALID",
+        "details": "Invalid OrderType"
+    },
+    "11036": {
+        "message": "TE_TIME_IN_FORCE_INVALID",
+        "details": "Invalid TimeInForce"
+    },
+    "11037": {
+        "message": "TE_EXEC_INST_INVALID",
+        "details": "Invalid ExecType"
+    },
+    "11038": {
+        "message": "TE_TRIGGER_INVALID",
+        "details": "Invalid trigger type"
+    },
+    "11039": {
+        "message": "TE_STOP_DIRECTION_INVALID",
+        "details": "Invalid stop direction type"
+    },
+    "11040": {
+        "message": "TE_NO_MARK_PRICE",
+        "details": "Cannot get valid mark price to create conditional order"
+    },
+    "11041": {
+        "message": "TE_NO_INDEX_PRICE",
+        "details": "Cannot get valid index price to create conditional order"
+    },
+    "11042": {
+        "message": "TE_NO_LAST_PRICE",
+        "details": "Cannot get valid last market price to create conditional order"
+    },
+    "11043": {
+        "message": "TE_RISING_TRIGGER_DIRECTLY",
+        "details": "Conditional order would be triggered immediately"
+    },
+    "11044": {
+        "message": "TE_FALLING_TRIGGER_DIRECTLY",
+        "details": "Conditional order would be triggered immediately"
+    },
+    "11045": {
+        "message": "TE_TRIGGER_PRICE_TOO_LARGE",
+        "details": "Conditional order trigger price is too high"
+    },
+    "11046": {
+        "message": "TE_TRIGGER_PRICE_TOO_SMALL",
+        "details": "Conditional order trigger price is too low"
+    },
+    "11047": {
+        "message": "TE_BUY_TP_SHOULD_GT_BASE",
+        "details": "TakeProfit BUY conditional order trigger price needs to be greater than reference price"
+    },
+    "11048": {
+        "message": "TE_BUY_SL_SHOULD_LT_BASE",
+        "details": "StopLoss BUY condition order price needs to be less than the reference price"
+    },
+    "11049": {
+        "message": "TE_BUY_SL_SHOULD_GT_LIQ",
+        "details": "StopLoss BUY condition order price needs to be greater than liquidation price or it will not trigger"
+    },
+    "11050": {
+        "message": "TE_SELL_TP_SHOULD_LT_BASE",
+        "details": "TakeProfit SELL conditional order trigger price needs to be less than reference price"
+    },
+    "11051": {
+        "message": "TE_SELL_SL_SHOULD_LT_LIQ",
+        "details": "StopLoss SELL condition order price needs to be less than liquidation price or it will not trigger"
+    },
+    "11052": {
+        "message": "TE_SELL_SL_SHOULD_GT_BASE",
+        "details": "StopLoss SELL condition order price needs to be greater than the reference price"
+    },
+    "11053": {
+        "message": "TE_PRICE_TOO_LARGE",
+        "details": "Order price is too large"
+    },
+    "11054": {
+        "message": "TE_PRICE_WORSE_THAN_BANKRUPT",
+        "details": "Order price cannot be more aggressive than bankrupt price if this order has instruction to close a position"
+    },
+    "11055": {
+        "message": "TE_PRICE_TOO_SMALL",
+        "details": "Order price is too low"
+    },
+    "11056": {
+        "message": "TE_QTY_TOO_LARGE",
+        "details": "Order quantity is too large"
+    },
+    "11057": {
+        "message": "TE_QTY_NOT_MATCH_REDUCE_ONLY",
+        "details": "Does not allow ReduceOnly order without position"
+    },
+    "11058": {
+        "message": "TE_QTY_TOO_SMALL",
+        "details": "Order quantity is too small"
+    },
+    "11059": {
+        "message": "TE_TP_SL_QTY_NOT_MATCH_POS",
+        "details": "Position size is zero. Cannot accept any TakeProfit or StopLoss order"
+    },
+    "11060": {
+        "message": "TE_SIDE_NOT_CLOSE_POS",
+        "details": "TakeProfit or StopLoss order has wrong side. Cannot close position"
+    },
+    "11061": {
+        "message": "TE_ORD_ALREADY_PENDING_CANCEL",
+        "details": "Repeated cancel request"
+    },
+    "11062": {
+        "message": "TE_ORD_ALREADY_CANCELED",
+        "details": "Order is already canceled"
+    },
+    "11063": {
+        "message": "TE_ORD_STATUS_CANNOT_CANCEL",
+        "details": "Order is not able to be canceled under current status"
+    },
+    "11064": {
+        "message": "TE_ORD_ALREADY_PENDING_REPLACE",
+        "details": "Replace request is rejected because order is already in pending replace status"
+    },
+    "11065": {
+        "message": "TE_ORD_REPLACE_NOT_MODIFIED",
+        "details": "Replace request does not modify any parameters of the order"
+    },
+    "11066": {
+        "message": "TE_ORD_STATUS_CANNOT_REPLACE",
+        "details": "Order is not able to be replaced under current status"
+    },
+    "11067": {
+        "message": "TE_CANNOT_REPLACE_PRICE",
+        "details": "Market conditional order cannot change price"
+    },
+    "11068": {
+        "message": "TE_CANNOT_REPLACE_QTY",
+        "details": "Condtional order for closing position cannot change order quantity, since the order quantity is determined by position size already"
+    },
+    "11069": {
+        "message": "TE_ACCOUNT_NOT_IN_RANGE",
+        "details": "The account ID in the request is not valid or is not in the range of the current process"
+    },
+    "11070": {
+        "message": "TE_SYMBOL_NOT_IN_RANGE",
+        "details": "The symbol is invalid"
+    },
+    "11071": {
+        "message": "TE_ORD_STATUS_CANNOT_TRIGGER"
+    },
+    "11072": {
+        "message": "TE_TKFR_NOT_IN_RANGE",
+        "details": "The fee value is not valid"
+    },
+    "11073": {
+        "message": "TE_MKFR_NOT_IN_RANGE",
+        "details": "The fee value is not valid"
+    },
+    "11074": {
+        "message": "TE_CANNOT_ATTACH_TP_SL",
+        "details": "Order request cannot contain TP/SL parameters when the account already has positions"
+    },
+    "11075": {
+        "message": "TE_TP_TOO_LARGE",
+        "details": "TakeProfit price is too large"
+    },
+    "11076": {
+        "message": "TE_TP_TOO_SMALL",
+        "details": "TakeProfit price is too small"
+    },
+    "11077": {
+        "message": "TE_TP_TRIGGER_INVALID",
+        "details": "Invalid trigger type"
+    },
+    "11078": {
+        "message": "TE_SL_TOO_LARGE",
+        "details": "StopLoss price is too large"
+    },
+    "11079": {
+        "message": "TE_SL_TOO_SMALL",
+        "details": "StopLoss price is too small"
+    },
+    "11080": {
+        "message": "TE_SL_TRIGGER_INVALID",
+        "details": "Invalid trigger type"
+    },
+    "11081": {
+        "message": "TE_RISK_LIMIT_EXCEEDS",
+        "details": "Total potential position breaches current risk limit"
+    },
+    "11082": {
+        "message": "TE_CANNOT_COVER_ESTIMATE_ORDER_LOSS",
+        "details": "The remaining balance cannot cover the potential unrealized PnL for this new order"
+    },
+    "11083": {
+        "message": "TE_TAKE_PROFIT_ORDER_DUPLICATED",
+        "details": "TakeProfit order already exists"
+    },
+    "11084": {
+        "message": "TE_STOP_LOSS_ORDER_DUPLICATED",
+        "details": "StopLoss order already exists"
+    },
+    "11085": {
+        "message": "TE_CL_ORD_ID_DUPLICATE",
+        "details": "ClOrdId is duplicated"
+    },
+    "11086": {
+        "message": "TE_PEG_PRICE_TYPE_INVALID",
+        "details": "PegPriceType is invalid"
+    },
+    "11087": {
+        "message": "TE_BUY_TS_SHOULD_LT_BASE",
+        "details": "The trailing order's StopPrice should be less than the current last price"
+    },
+    "11088": {
+        "message": "TE_BUY_TS_SHOULD_GT_LIQ",
+        "details": "The traling order's StopPrice should be greater than the current liquidation price"
+    },
+    "11089": {
+        "message": "TE_SELL_TS_SHOULD_LT_LIQ",
+        "details": "The traling order's StopPrice should be greater than the current last price"
+    },
+    "11090": {
+        "message": "TE_SELL_TS_SHOULD_GT_BASE",
+        "details": "The traling order's StopPrice should be less than the current liquidation price"
+    },
+    "11091": {
+        "message": "TE_BUY_REVERT_VALUE_SHOULD_LT_ZERO",
+        "details": "The PegOffset should be less than zero"
+    },
+    "11092": {
+        "message": "TE_SELL_REVERT_VALUE_SHOULD_GT_ZERO",
+        "details": "The PegOffset should be greater than zero"
+    },
+    "11093": {
+        "message": "TE_BUY_TTP_SHOULD_ACTIVATE_ABOVE_BASE",
+        "details": "The activation price should be greater than the current last price"
+    },
+    "11094": {
+        "message": "TE_SELL_TTP_SHOULD_ACTIVATE_BELOW_BASE",
+        "details": "The activation price should be less than the current last price"
+    },
+    "11095": {
+        "message": "TE_TRAILING_ORDER_DUPLICATED",
+        "details": "A trailing order exists already"
+    },
+    "11096": {
+        "message": "TE_CLOSE_ORDER_CANNOT_ATTACH_TP_SL",
+        "details": "An order to close position cannot have trailing instruction"
+    },
+    "11097": {
+        "message": "TE_CANNOT_FIND_WALLET_OF_THIS_CURRENCY",
+        "details": "This crypto is not supported"
+    },
+    "11098": {
+        "message": "TE_WALLET_INVALID_ACTION",
+        "details": "Invalid action on wallet"
+    },
+    "11099": {
+        "message": "TE_WALLET_VID_UNMATCHED",
+        "details": "Wallet operation request has a wrong wallet vid"
+    },
+    "11100": {
+        "message": "TE_WALLET_INSUFFICIENT_BALANCE",
+        "details": "Wallet has insufficient balance"
+    },
+    "11101": {
+        "message": "TE_WALLET_INSUFFICIENT_LOCKED_BALANCE",
+        "details": "Locked balance in wallet is not enough for unlock/withdraw request"
+    },
+    "11102": {
+        "message": "TE_WALLET_INVALID_DEPOSIT_AMOUNT",
+        "details": "Deposit amount must be greater than zero"
+    },
+    "11103": {
+        "message": "TE_WALLET_INVALID_WITHDRAW_AMOUNT",
+        "details": "Withdraw amount must be less than zero"
+    },
+    "11104": {
+        "message": "TE_WALLET_REACHED_MAX_AMOUNT",
+        "details": "Deposit makes wallet exceed max amount allowed"
+    },
+    "11105": {
+        "message": "TE_PLACE_ORDER_INSUFFICIENT_BASE_BALANCE",
+        "details": "Insufficient funds in base wallet"
+    },
+    "11106": {
+        "message": "TE_PLACE_ORDER_INSUFFICIENT_QUOTE_BALANCE",
+        "details": "Insufficient funds in quote wallet"
+    },
+    "11107": {
+        "message": "TE_CANNOT_CONNECT_TO_REQUEST_SEQ",
+        "details": "TradingEngine failed to connect with CrossEngine"
+    },
+    "11108": {
+        "message": "TE_CANNOT_REPLACE_OR_CANCEL_MARKET_ORDER",
+        "details": "Cannot replace/amend market order"
+    },
+    "11109": {
+        "message": "TE_CANNOT_REPLACE_OR_CANCEL_IOC_ORDER",
+        "details": "Cannot replace/amend ImmediateOrCancel order"
+    },
+    "11110": {
+        "message": "TE_CANNOT_REPLACE_OR_CANCEL_FOK_ORDER",
+        "details": "Cannot replace/amend FillOrKill order"
+    },
+    "11111": {
+        "message": "TE_MISSING_ORDER_ID",
+        "details": "OrderId is missing"
+    },
+    "11112": {
+        "message": "TE_QTY_TYPE_INVALID",
+        "details": "QtyType is invalid"
+    },
+    "11113": {
+        "message": "TE_USER_ID_INVALID",
+        "details": "UserId is invalid"
+    },
+    "11114": {
+        "message": "TE_ORDER_VALUE_TOO_LARGE",
+        "details": "Order value is too large"
+    },
+    "11115": {
+        "message": "TE_ORDER_VALUE_TOO_SMALL",
+        "details": "Order value is too small"
+    },
+    "11116": {
+        "message": "TE_BO_NUM_EXCEEDS ",
+        "details": "the total count of brakcet orders should equal or less than 5 "
+    },
+    "11117": {
+        "message": "TE_BO_CANNOT_HAVE_BO_WITH_DIFF_SIDE ",
+        "details": "all bracket orders should have the same Side. "
+    },
+    "11118": {
+        "message": "TE_BO_TP_PRICE_INVALID ",
+        "details": "bracker order take profit price is invalid "
+    },
+    "11119": {
+        "message": "TE_BO_SL_PRICE_INVALID ",
+        "details": "bracker order stop loss price is invalid "
+    },
+    "11120": {
+        "message": "TE_BO_SL_TRIGGER_PRICE_INVALID ",
+        "details": "bracker order stop loss trigger price is invalid "
+    },
+    "11121": {
+        "message": "TE_BO_CANNOT_REPLACE ",
+        "details": "cannot replace bracket order. "
+    },
+    "11122": {
+        "message": "TE_BO_BOTP_STATUS_INVALID ",
+        "details": "bracket take profit order status is invalid "
+    },
+    "11123": {
+        "message": "TE_BO_CANNOT_PLACE_BOTP_OR_BOSL_ORDER ",
+        "details": "cannot place bracket take profit order "
+    },
+    "11124": {
+        "message": "TE_BO_CANNOT_REPLACE_BOTP_OR_BOSL_ORDER ",
+        "details": "cannot place bracket stop loss order "
+    },
+    "11125": {
+        "message": "TE_BO_CANNOT_CANCEL_BOTP_OR_BOSL_ORDER ",
+        "details": "cannot cancel bracket sl/tp order "
+    },
+    "11126": {
+        "message": "TE_BO_DONOT_SUPPORT_API ",
+        "details": "doesn't support bracket order via API "
+    },
+    "11128": {
+        "message": "TE_BO_INVALID_EXECINST ",
+        "details": "ExecInst value is invalid "
+    },
+    "11129": {
+        "message": "TE_BO_MUST_BE_SAME_SIDE_AS_POS ",
+        "details": "bracket order should have the same side as position's side "
+    },
+    "11130": {
+        "message": "TE_BO_WRONG_SL_TRIGGER_TYPE ",
+        "details": "bracket stop loss order trigger type is invalid "
+    },
+    "11131": {
+        "message": "TE_BO_WRONG_TP_TRIGGER_TYPE ",
+        "details": "bracket take profit order trigger type is invalid "
+    },
+    "11132": {
+        "message": "TE_BO_ABORT_BOSL_DUE_BOTP_CREATE_FAILED ",
+        "details": "cancel bracket stop loss order due failed to create take profit order. "
+    },
+    "11133": {
+        "message": "TE_BO_ABORT_BOSL_DUE_BOPO_CANCELED ",
+        "details": "cancel bracket stop loss order due main order canceled. "
+    },
+    "11134": {
+        "message": "TE_BO_ABORT_BOTP_DUE_BOPO_CANCELED ",
+        "details": "cancel bracket take profit order due main order canceled."
+    }
+}
