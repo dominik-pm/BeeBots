@@ -1,7 +1,7 @@
 {
-  "name": "positionalgo",
+  "name": "buyalgo",
   "version": "0.0.1",
-  "description": "service to manage open trade positions for beebots",
+  "description": "buyalgo service for beebots",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
@@ -17,7 +17,6 @@
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.13",
-    "request": "^2.88.2",
     "supertest": "^6.1.6"
   }
 }
