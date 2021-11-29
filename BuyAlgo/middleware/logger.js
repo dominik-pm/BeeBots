@@ -54,19 +54,6 @@ function logResponse(res, callback) {
         }
         const body = Buffer.concat(chunks).toString('utf8');
 
-        // console.log({
-        //     time: new Date().toUTCString(),
-        //     fromIP: req.headers['x-forwarded-for'] || 
-        //     req.connection.remoteAddress,
-        //     method: req.method,
-        //     originalUri: req.originalUrl,
-        //     uri: req.url,
-        //     requestData: req.body,
-        //     responseData: body,
-        //     referer: req.headers.referer || '',
-        //     ua: req.headers['user-agent']
-        // });
-        
         if (isValidJson(body)) {
             callback(JSON.parse(body));
             oldEnd.apply(res, restArgs);
