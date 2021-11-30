@@ -5,7 +5,8 @@ const authenticate = require('./middleware/authenticate')
 const { logTime, logErr } = require('./middleware/logger')
 const { updatePosition } = require('./middleware/positionupdate')
 const app = express()
-const port = process.argv[2] || 8088
+
+const port = Number(process.argv[2]) || 8088
 
 app.use(express.json())
 app.use(logTime)
