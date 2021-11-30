@@ -1,19 +1,19 @@
-import dotenv from 'dotenv';
-import express, {Application, Request, Response, NextFunction } from 'express';
-import authenticate from './middleware/authenticate';
-import { logErr, logTime } from './middleware/logger';
-import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler';
+import dotenv from 'dotenv'
+import express, {Application, Request, Response, NextFunction } from 'express'
+import authenticate from './middleware/authenticate'
+import { logErr, logTime } from './middleware/logger'
+import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler'
 import { StartLiveData } from './middleware/phemexclient/phemex-livedata'
 
 dotenv.config({path: './variables.env'})
 
-export const app: Application = express();
-const port: String | Number = process.argv[2] || 8085;
+export const app: Application = express()
+const port: Number = Number(process.argv[2]) || 8085
 
-app.use(express.json()); 
-app.use(logTime);
+app.use(express.json());
+app.use(logTime)
 app.use((req: any, res: Response, next: NextFunction) => {
-    req.toSend = {};
+    req.toSend = {}
     next()
 })
 

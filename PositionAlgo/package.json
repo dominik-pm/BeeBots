@@ -4,7 +4,8 @@
   "description": "service to manage open trade positions for beebots",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.ts",
     "test": "cross-env NODE_ENV=test jest --watchAll --silent"
   },
   "author": "",
