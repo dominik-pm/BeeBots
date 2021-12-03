@@ -24,14 +24,13 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build --if-present
-          npm run test --if-present
+        working-directory: PositionAlgo
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: ./PositionAlgo
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,4 +52,4 @@ jobs:
           app-name: 'PositionAlgo'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FB5F5C1F4DCD469A857A0B2C7F7F3EA4 }}
-          package: .
+          package: ./PositionAlgo
