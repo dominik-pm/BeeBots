@@ -52,4 +52,4 @@ jobs:
           app-name: 'PositionAlgo'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FB5F5C1F4DCD469A857A0B2C7F7F3EA4 }}
-          package: ./PositionAlgo
+          package: .
