@@ -8,7 +8,7 @@ import { StartLiveData } from './middleware/phemexclient/phemex-livedata'
 dotenv.config({path: './variables.env'})
 
 export const app: Application = express();
-const port: String | Number = process.argv[2] || 8085;
+const port: String | Number = 80;// process.argv[2] || 8085;
 
 app.use(express.json()); 
 app.use(logTime);
