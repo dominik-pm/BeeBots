@@ -5,7 +5,8 @@ const authenticate = require('./middleware/authenticate')
 const { logTime, logErr } = require('./middleware/logger')
 const { tradeCall } = require('./middleware/tradecall')
 const app = express()
-const port = Number(process.argv[2]) || 8087
+
+const port = process.env.PORT | 80;//Number(process.argv[2]) || 8087
 
 app.use(express.json())
 app.use(logTime);
