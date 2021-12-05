@@ -2,11 +2,32 @@ import Bot from '../bot/Bot'
 import jwt from 'jsonwebtoken'
 import { secretToken } from '../index'
 import { TradingPermission } from '../@types/Bot'
+import axios from 'axios'
 
+
+export async function getMarketData(): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+        const payload = {}
+        const token = jwt.sign(payload, secretToken)
+        const headers = {
+            'Authorization': `Bearer ${token}` 
+        }
+        axios.get('http://phemexhandler.azurewebsites.net/price', {headers})
+        .then(res => {
+            resolve(res.data)
+        })
+        .catch(err => {
+            reject(err)
+        })
+
+    })
+}
 
 export async function getActiveBots(): Promise<Bot[]> {
     return new Promise((resolve, reject) => {
         let bots: Bot[] = []
+
         setTimeout(() => { // simulate api request
 
             // Phemex API Keys (encrypted)
