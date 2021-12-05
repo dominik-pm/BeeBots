@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - BuyAlgo
+name: Build and deploy Node.js app to Azure Web App - PositionAlgo
 
 on:
   push:
@@ -24,14 +24,13 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build --if-present
-        working-directory: BuyAlgo
+        working-directory: PositionAlgo
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: ./PositionAlgo
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,7 +49,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: 'BuyAlgo'
+          app-name: 'PositionAlgo'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7FF1171A01704D73B7E3590627B29C1E }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FB5F5C1F4DCD469A857A0B2C7F7F3EA4 }}
           package: .
