@@ -6,22 +6,22 @@ const { logTime, logErr } = require('./middleware/logger')
 const { tradeCall } = require('./middleware/tradecall')
 const app = express()
 
-const port = process.env.PORT | 80;//Number(process.argv[2]) || 8087
+const port = process.env.PORT || 8087 //Number(process.argv[2]) || 8087
 
 app.use(express.json())
-app.use(logTime);
+app.use(logTime)
 
 app.get('/', (req, res) => {
     res.status(200).send({message: 'working'})
 })
 
 app.get('/tradecall', tradeCall, authenticate, (req, res) => {
-    const {action, confidence} = req.body.tradeCall;
+    const {action, confidence} = req.body.tradeCall
 
     if (!action || !confidence) {
-        console.log(`action: ${action}`);
-        console.log(`confidence: ${confidence}`);
-        throw('internal error: no action or confidence');
+        console.log(`action: ${action}`)
+        console.log(`confidence: ${confidence}`)
+        throw('internal error: no action or confidence')
     }
 
     let resObj = {
@@ -30,19 +30,19 @@ app.get('/tradecall', tradeCall, authenticate, (req, res) => {
     }
 
     res.status(200).send(resObj)
-});
+})
 
 app.get('/*', (req, res) => {
     throw {status: 404, message: 'Not found'}
 })
 
-app.use(logErr);
+app.use(logErr)
 
 // when running tests, dont start a server (testscript already does)
 if (process.env.NODE_ENV != 'test') {
 
     app.listen(port, () => {
-        console.log(`BuyAlgo running at localhost:${port}!`);
+        console.log(`BuyAlgo running at localhost:${port}!`)
     })
 
 }
