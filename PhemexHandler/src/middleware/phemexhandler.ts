@@ -61,7 +61,7 @@ export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     .catch((err) => {
         console.log('phemex responded with error:', err)
         let msg = logErrorCode(err)
-        throw(msg)
+        throw({message: msg})
     })
 }
 export function getTrades(req: any, res: Response, next: NextFunction) {

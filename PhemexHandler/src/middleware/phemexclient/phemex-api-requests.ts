@@ -98,7 +98,8 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
                     "data": <data>
                 }
             */
-           console.log(res.body)
+            console.log(res.body)
+            
             if (!res.body.result && res.body.code != 0 && !res.body.error) {
                 reject(res.body.code);
             } else {

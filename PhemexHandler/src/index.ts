@@ -34,6 +34,7 @@ app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
 })
 
 app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
+    // TODO: not working (api signature verification failed -> unhandled rejection)
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
