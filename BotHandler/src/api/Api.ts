@@ -13,7 +13,24 @@ export async function getMarketData(): Promise<any> {
         const headers = {
             'Authorization': `Bearer ${token}` 
         }
-        axios.get('http://phemexhandler.azurewebsites.net/price', {headers})
+        axios.get('http://phemexhandler.azurewebsites.net/marketdata', {headers})
+        .then(res => {
+            resolve(res.data)
+        })
+        .catch(err => {
+            reject(err)
+        })
+
+    })
+}
+
+export async function getAccountInfo(token: String): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+        const headers = {
+            'Authorization': `Bearer ${token}` 
+        }
+        axios.get('http://phemexhandler.azurewebsites.net/accountInfo', {headers})
         .then(res => {
             resolve(res.data)
         })

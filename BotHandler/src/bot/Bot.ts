@@ -10,6 +10,8 @@ export default class Bot {
         this.tradingPermission = tradingPermission
         this.name = name
     }
+
+    
    
     toString() {
         return `Hello, Im ${this.name}! I am trading ${this.tradingPermission}!`;
