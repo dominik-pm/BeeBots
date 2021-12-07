@@ -2,9 +2,44 @@ import Bot from '../bot/Bot'
 import jwt from 'jsonwebtoken'
 import { secretToken } from '../index'
 import { TradingPermission } from '../@types/Bot'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
+import { BuyAlgoResponse } from '../@types/api/BuyAlgo'
 
 
+function formatAxiosError(err: AxiosError) {
+    if (err.response) {
+        return err.response.data
+    } else {
+        return err.message
+    }
+}
+
+// --> BuyAlgo
+export async function getTradeCall(token: String, data: any): Promise<BuyAlgoResponse> {
+    return new Promise((resolve, reject) => {
+
+        const headers = {
+            'Authorization': `Bearer ${token}` 
+        }
+        axios.get('http://buyalgo.azurewebsites.net/tradecall', {headers, data: data})
+        .then(res => {
+            resolve(res.data)
+        })
+        .catch(err => {
+            reject(formatAxiosError(err))
+        })
+
+    })
+}
+// <--
+
+
+// --> PositionAlgo
+
+// <--
+
+
+// --> PHEMEX HANDLER
 export async function getMarketData(): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -18,12 +53,11 @@ export async function getMarketData(): Promise<any> {
             resolve(res.data)
         })
         .catch(err => {
-            reject(err)
+            reject(formatAxiosError(err))
         })
 
     })
 }
-
 export async function getAccountInfo(token: String): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -35,12 +69,15 @@ export async function getAccountInfo(token: String): Promise<any> {
             resolve(res.data)
         })
         .catch(err => {
-            reject(err)
+            reject(formatAxiosError(err))
         })
 
     })
 }
+// <--
 
+
+// --> BACKEND
 export async function getActiveBots(): Promise<Bot[]> {
     return new Promise((resolve, reject) => {
         let bots: Bot[] = []
@@ -60,7 +97,7 @@ export async function getActiveBots(): Promise<Bot[]> {
             bots.push(bot1)
 
 
-            const authToken2 = jwt.sign('', secretToken)
+            const authToken2 = jwt.sign('nix', secretToken)
             let bot2: Bot = new Bot(authToken2, 'simulated', 'Bertl')
             bots.push(bot2)
 
@@ -69,3 +106,4 @@ export async function getActiveBots(): Promise<Bot[]> {
         }, 1000)
     })
 }
+// <--

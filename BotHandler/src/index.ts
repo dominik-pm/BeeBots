@@ -3,7 +3,8 @@ import { getAccountInfo, getActiveBots, getMarketData } from './api/Api'
 import Bot from './bot/Bot'
 import {TradingPermission} from './@types/Bot'
 
-const DATA_INTERVAL = 10000;
+const DATA_INTERVAL = 10000
+export let currentMarketData = {currentPrice: 100000}
 
 dotenv.config({path: './variables.env'})
 
@@ -45,18 +46,22 @@ function manageBots(bots: Bot[]): void {
             // TODO: check what type the bots is
             if (bot.tradingPermission == 'simulated') {
 
+                bot.decideAction(data)
+
             } else {
+                // TODO:
+                console.log(`API Trading not implemented`)
                 // -> trading on phemex
                 // 1. get account info
-                getAccountInfo(bot.authToken)
-                .then(data => {
-                    console.log(`-> Bot ${bot.name} got account info:`, data)
+                // getAccountInfo(bot.authToken) // is stuck -> no response
+                // .then(data => {
+                    // console.log(`-> Bot ${bot.name} got account info:`, data)
                     //  -> check for open orders and close them
                     //  -> check for open positions and give the bot the status of the position
-                })
-                .catch(err => {
-                    console.log(err)
-                })
+                // })
+                // .catch(err => {
+                    // console.log(err)
+                // })
             }
     
         })
