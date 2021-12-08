@@ -32,12 +32,12 @@ export async function deleteRequest(endpoint: string, params: any, options: Phem
     return await makeRequest('DELETE', endpoint, params, options);
 }
 
-async function makeRequest(method: Method, endpoint: string, params: any, options: PhemexRequestOptions) {
+async function makeRequest(method: Method, endpoint: string, params: any, options: PhemexRequestOptions): Promise<any> {
 
     // Define variables
     let expiry = Date.now() + 60000;
     let baseURL = urls[options.isLivenet ? 'livenet' : 'testnet'];
-    console.log(options)
+    // console.log(options)
     let signature;
     let content = '';
 
@@ -63,8 +63,6 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
         }
     }
 
-    // TODO: get hashed api key out of params and decrypt the secret
-
     signature = generateSignature(content, options.secret);
 
     const httpOptions: HttpOptions = {
@@ -77,7 +75,7 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
             'x-phemex-request-signature': signature,
         }
     }
-    console.log([baseURL, endpoint].join(''))
+    // console.log([baseURL, endpoint].join(''))
 
     if (method === 'GET' || method === 'PUT' || method === 'DELETE') {
         if (params) {
@@ -98,12 +96,17 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
                     "data": <data>
                 }
             */
-            console.log(res.body)
+            // console.log(res.body)
             
             if (!res.body.result && res.body.code != 0 && !res.body.error) {
                 reject(res.body.code);
             } else {
-                resolve(body);
+                // TODO: phemex sends different formats for diff requests
+                let res = body.data
+                if (!body.data) {
+                    res = body.result
+                }
+                resolve({result: res});
             }
         });
     });

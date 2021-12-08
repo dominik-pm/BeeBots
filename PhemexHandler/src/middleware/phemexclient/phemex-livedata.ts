@@ -5,11 +5,11 @@ const { replay } = tardis;
 
 export let livePrice: number = 0
 
-export function StartLiveData() {
-    GetRealTimeData()
+export function startLiveData() {
+    getRealTimeData()
 }
 
-async function GetRealTimeData() {
+async function getRealTimeData() {
     const messages = streamNormalized(
         {
             exchange: 'phemex',

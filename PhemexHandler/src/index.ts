@@ -2,8 +2,8 @@ import dotenv from 'dotenv'
 import express, {Application, Request, Response, NextFunction } from 'express'
 import authenticate from './middleware/authenticate'
 import { logErr, logTime } from './middleware/logger'
-import { getAccountInfo, getMarketAnalysis, getPrice, getTrades } from './middleware/phemexhandler'
-import { StartLiveData } from './middleware/phemexclient/phemex-livedata'
+import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler'
+import { startLiveData } from './middleware/phemexclient/phemex-livedata'
 
 dotenv.config({path: './variables.env'})
 
@@ -34,7 +34,7 @@ app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
 })
 
 app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
-    // TODO: not working (api signature verification failed -> unhandled rejection)
+    // TODO: not working (api-signature-verification failed -> unhandled rejection)
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
@@ -60,7 +60,15 @@ if (process.env.NODE_ENV != 'test') {
 
         console.log(`PhemexHandler running at http://${host}:${p}!`)
 
-        StartLiveData()
+        startLiveData()
+
+        // test()
+        // .then(res => {
+        //     console.log(res)
+        // })
+        // .catch(err => {
+        //     console.log(err)
+        // })
     })
 
 }
@@ -69,7 +77,7 @@ if (process.env.NODE_ENV != 'test') {
 function getResObject(req: any, res: Response) {
     let resObj = req.toSend
     if (!resObj) {
-        res.status(200)
+        res.status(200).send({})
         console.log('No response data')
     }
     return resObj

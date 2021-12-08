@@ -23,9 +23,9 @@
         "message": "OM_ORDER_PENDING",
         "details": "Cannot cancel while order is already in pending cancel status"
     },
-    "10500": {
-        "message": "API Key not found.",
-        "details": "judenerror"
+    "10500": { 
+        "message": "INVALID_OPTIONS",
+        "details": "Invalid options sent when calling the phemex api"
     },
     "11001": {
         "message": "TE_NO_ENOUGH_AVAILABLE_BALANCE",

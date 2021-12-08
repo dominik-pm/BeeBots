@@ -7,6 +7,7 @@ import { PhemexRequestOptions } from '../@types/request';
 import errorCodes from './phemexclient/errorcodes.json';
 import { livePrice } from './phemexclient/phemex-livedata';
 import testCcxt from './phemexclient/phemex-api-req-ccxt';
+import { logErr } from './logger';
 
 interface Payload {
     iv: string,
@@ -24,13 +25,16 @@ export function test() {
         apiKey: "ea7308fd-c9d6-4884-ad92-da6b8cd6aaa9",
         secret: "gx2-UEdHM2ZIj_gRpKfm1YmbptZwq7nxGDXrWkR48t1mNzRlYWM0Ny1hMTBhLTRlYzQtYmY1Ni1jNjI2YjE3ODYxYzU",
         isLivenet: false
-    };
+    }
 
-    return testCcxt();
+    // return testCcxt();
 
-    // return PhemexClient.QueryTradingAccountAndPositions({symbol: 'BTCUSD', currency: 'BTC'}, options)
+    // return PhemexClient.QueryClientsAndWallets({}, options)
+
+    // return PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
 
     // return PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
+
 }
 
 export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
@@ -40,8 +44,10 @@ export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
         next()
     })
     .catch((err) => {
-        console.log(err)
-        throw(err)
+        console.log('phemex responded with error:', err)
+        let msg = logErrorCode(err)
+        // throw({message: msg})    // TODO: logErr should be called when throwing
+        logErr({message: msg}, req, res, next)
     })
 }
 export function getPrice(req: any, res: Response, next: NextFunction) {
@@ -53,7 +59,7 @@ export function getPrice(req: any, res: Response, next: NextFunction) {
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token);
 
-    PhemexClient.QueryTradingAccountAndPositions({symbol: 'BTCUSD', currency: 'BTC'}, options)
+    PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
     .then((data: any) => {
         req.toSend = handleResponse(data)
         next()
@@ -61,7 +67,8 @@ export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     .catch((err) => {
         console.log('phemex responded with error:', err)
         let msg = logErrorCode(err)
-        throw({message: msg})
+        // throw({message: msg})
+        logErr({message: msg}, req, res, next)
     })
 }
 export function getTrades(req: any, res: Response, next: NextFunction) {
@@ -75,7 +82,8 @@ export function getTrades(req: any, res: Response, next: NextFunction) {
     .catch((err) => {
         console.log('phemex responded with error:', err)
         let msg = logErrorCode(err)
-        throw({message: msg})
+        // throw({message: msg})
+        logErr({message: msg}, req, res, next)
     })
 }
 
@@ -116,6 +124,7 @@ function logErrorCode(code: string): string {
     }
 }
 function handleResponse(res: any) {
+    console.log('res', res)
     const { error, result } = res
     if (error) {
         throw(error)

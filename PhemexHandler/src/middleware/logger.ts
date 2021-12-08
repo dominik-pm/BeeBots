@@ -27,7 +27,6 @@ function currentTime() {
 
 // is called when an error occures (by script error or throw)
 export function logErr(err: any, req: Request, res: Response, next: NextFunction) {
-    console.log('err',err)
     // expected error (400)
     if (err.status) {
         console.log(err.message)
