@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
-import { getAccountInfo, getActiveBots, getMarketData } from './api/Api'
+import { getActiveBots, getMarketData } from './api/Api'
 import Bot from './bot/Bot'
-import {TradingPermission} from './@types/Bot'
 
 const DATA_INTERVAL = 10000
 export let currentMarketData = {currentPrice: 100000}
