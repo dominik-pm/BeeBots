@@ -2,19 +2,21 @@ declare module 'bot'
 
 export declare type TradingPermission = 'live' | 'testnet' | 'simulated'
 export interface ActiveTrade {
-    isFilled: Boolean
+    isFilled: boolean
     side: 'long' | 'short'
-    entryPrice: Number
-    stopLoss: Number
-    takeProfit: Number | null
-    exitPrice: Number | null
+    entryPrice: number
+    originalStopLoss: number,
+    stopLoss: number,
+    takeProfit: number | null
+    exitPrice: number | null
 }
 export interface Transaction {
-    entryPrice: Number
-    exitPrice: Number
-    profit: Number
+    entryPrice: number
+    exitPrice: number
+    profit: number
 }
 export interface RiskProfile {
-    tradeThreshhold: Number         // percentage
-    capitalRiskPerTrade: Number     // percentage
+    tradeThreshhold: number         // percentage
+    capitalRiskPerTrade: number     // percentage
+    stopLossDistance: number        // percentage
 }
