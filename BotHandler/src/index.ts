@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { MarketData } from './@types/api/PhemexHandler'
-import { getActiveBots, getMarketData } from './api/Api'
+import { ActiveTrade, ClosedTrade } from './@types/Bot'
+import { getActiveBots, getMarketData, saveBotTransaction } from './api/Api'
 import Bot from './bot/Bot'
 
 const DATA_INTERVAL = 10000
@@ -42,6 +43,9 @@ function validateBotAccounts() {
     // .catch(err => {
         // console.log(err)
     // })
+    
+    //console.log(bot.toString())
+
 }
 
 
@@ -56,54 +60,9 @@ function manageBots(bots: Bot[]): void {
         console.log(`Current Price: ${currentPrice}`)
 
         bots.forEach(bot => {
-            console.log(bot.toString())
+            checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
 
-            // TODO: check what type the bots is
             bot.decideAction(data)
-
-            if (bot.tradingPermission == 'simulated') {
-                // 1. check if bot is in a trade
-                if (!bot.currentTrade) return
-
-                if (bot.currentTrade.side == 'long') {
-                    
-                    // -> check if stoploss is hit
-                    if (currentPrice <= bot.currentTrade.stopLoss) {
-                        botHitStopLoss(bot, bot.currentTrade.stopLoss)
-                        return
-                    }
-
-                    // -> check if takeprofit is hit
-                    if (!bot.currentTrade.takeProfit) return
-                    if (currentPrice > bot.currentTrade.takeProfit) {
-                        botHitTakeProfit(bot, bot.currentTrade.takeProfit)
-                        return
-                    }
-
-                } else if (bot.currentTrade.side == 'short') {
-                    if (currentPrice >= bot.currentTrade.stopLoss) {
-                        botHitStopLoss(bot, bot.currentTrade.stopLoss)
-                        return
-                    }
-
-                    if (!bot.currentTrade.takeProfit) return
-                    if (currentPrice < bot.currentTrade.takeProfit) {
-                        botHitTakeProfit(bot, bot.currentTrade.takeProfit)
-                        return
-                    }
-
-                }
-                
-                // 2. calculate the trade profit and call bot.closedPosition
-
-
-            } else {
-                // TODO:
-                console.log(`API Trading not implemented`)
-                // 1. check if the trade is still open
-                // 2. if not -> get the trade result
-            }
-    
         })
 
     })
@@ -112,24 +71,100 @@ function manageBots(bots: Bot[]): void {
     })
 
 }
+function checkPosition(bot: Bot, currentPrice: number) {
+    if (bot.tradingPermission == 'simulated') {
+        // 1. check if bot is in a trade
+        if (!bot.currentTrade) return
 
-function botHitStopLoss(bot: Bot, exitPrice: number) {   
-    console.log(`${bot.name} hit the stoploss at ${exitPrice}!`)
+        if (bot.currentTrade.side == 'long') {
+            
+            // -> check if stoploss is hit
+            if (currentPrice <= bot.currentTrade.stopLoss) {
+                botHitStopLoss(bot, bot.currentTrade)
+                return
+            }
 
-    const profit = -1
+            // -> check if takeprofit is hit
+            if (!bot.currentTrade.takeProfit) return
+            if (currentPrice > bot.currentTrade.takeProfit) {
+                botHitTakeProfit(bot, bot.currentTrade)
+                return
+            }
 
-    bot.closedPosition(profit, exitPrice)
+        } else if (bot.currentTrade.side == 'short') {
+            if (currentPrice >= bot.currentTrade.stopLoss) {
+                botHitStopLoss(bot, bot.currentTrade)
+                return
+            }
 
-    console.log(`${bot.name} trade history: `)
-    console.log(bot.tradeHistory)
+            if (!bot.currentTrade.takeProfit) return
+            if (currentPrice < bot.currentTrade.takeProfit) {
+                botHitTakeProfit(bot, bot.currentTrade)
+                return
+            }
+
+        }
+
+
+    } else {
+        // TODO:
+        console.log(`API Trading not implemented`)
+        // 1. check if the trade is still open
+        // 2. if not -> get the trade result
+    }
 }
-function botHitTakeProfit(bot: Bot, exitPrice: number) {
-    console.log(`${bot.name} hit the takeprofit at ${exitPrice}}!`)
 
-    const profit = 2
+function botHitStopLoss(bot: Bot, closedTrade: ActiveTrade) {   
+    if (!closedTrade.exitPrice) {
+        closedTrade.exitPrice = closedTrade.stopLoss
+    }
 
-    bot.closedPosition(profit, exitPrice)
+    console.log(`${bot.name} hit the stoploss at ${closedTrade.exitPrice}!`)
+
+    botClosePosition(bot, <ClosedTrade>closedTrade)
+}
+
+function botHitTakeProfit(bot: Bot, activeTrade: ActiveTrade) {
+    if (!activeTrade.exitPrice) {
+        if (!activeTrade.takeProfit) {
+            console.log(`${bot.name} can not hit take profit! no takeProfit or exitPrice specified!`)
+            console.log(activeTrade)
+            return
+        }
+        activeTrade.exitPrice = activeTrade.takeProfit
+    }
+
+    console.log(`${bot.name} hit the takeprofit at ${activeTrade.exitPrice}}!`)
+
+    botClosePosition(bot, <ClosedTrade>activeTrade)
+}
+
+export function getRProfit(entryPrice: number, stopLoss: number, exitPrice: number): number {
+    const stopDistance = entryPrice - stopLoss
+    const profitDistance = exitPrice - entryPrice
+    const rProfit = Math.trunc(Math.round((profitDistance / stopDistance)*100))
+
+    return rProfit
+}
+
+function botClosePosition(bot: Bot, closedTrade: ClosedTrade) {
+
+    const rProfit = getRProfit(closedTrade.entryPrice, closedTrade.originalStopLoss, closedTrade.exitPrice)
+
+    const newTrade = bot.closedPosition(rProfit, closedTrade.exitPrice)
 
     console.log(`${bot.name} trade history: `)
     console.log(bot.tradeHistory)
+
+    if (newTrade) {
+        saveBotTransaction(bot.id, newTrade, bot.authToken)
+        .then(res => {
+            console.log(`${bot.name}: Successfully saved transaction to the database!`)
+            console.log(res)
+        })
+        .catch(err => {
+            console.log(`${bot.name}: Could not save the transaction to the database!`)
+            console.log(err)
+        })
+    }
 }

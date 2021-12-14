@@ -1,7 +1,7 @@
 import Bot from '../bot/Bot'
 import jwt from 'jsonwebtoken'
 import { secretToken } from '../index'
-import { ActiveTrade, TradingPermission } from '../@types/Bot'
+import { ActiveTrade, TradingPermission, Transaction } from '../@types/Bot'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { BuyAlgoRequest, BuyAlgoResponse } from '../@types/api/BuyAlgo'
 import { PositionAlgoRequest, PositionAlgoResponse } from '../@types/api/PositionAlgo'
@@ -95,10 +95,7 @@ export async function getMarketData(): Promise<MarketData> {
 export async function getAccountInfo(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        const headers = {
-            'Authorization': `Bearer ${token}` 
-        }
-        axios.get('http://phemexhandler.azurewebsites.net/accountInfo', {headers})
+        axios.get('http://phemexhandler.azurewebsites.net/accountInfo', getAxiosRequestConfig(token, null))
         .then(res => {
             resolve(res.data)
         })
@@ -132,12 +129,29 @@ export async function getActiveBots(): Promise<Bot[]> {
 
 
             const authToken2 = jwt.sign('nix', secretToken)
-            let bot2: Bot = new Bot(authToken2, 'simulated', 'Bertl')
+            let bot2: Bot = new Bot(2, authToken2, 'simulated', 'Bertl')
             bots.push(bot2)
 
 
             resolve(bots)
         }, 1000)
+    })
+}
+
+export async function saveBotTransaction(botId: number, newTrade: Transaction, token: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+        axios.get('http://beebotsbackend.azurewebsites.net/accountInfo', getAxiosRequestConfig(token, {
+            botId, 
+            trade: newTrade
+        }))
+        .then(res => {
+            resolve(res.data)
+        })
+        .catch(err => {
+            reject(formatAxiosError(err))
+        })
+
     })
 }
 // <--

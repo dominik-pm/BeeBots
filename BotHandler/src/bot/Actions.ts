@@ -4,7 +4,7 @@ import { formatPrice } from '../helper'
 import Bot from './Bot'
 
 export function openPosition(bot: Bot, action: 'Buy' | 'Sell', stopDistancePercentage: number) {
-    console.log(`Bot ${bot.name} wants to open a trade`)
+    console.log(`Bot ${bot.name} wants to open ${action == 'Buy' ? 'long' : 'short'} trade`)
 
     const stopDistance: number = currentMarketData.currentPrice * stopDistancePercentage
     const stopLoss: number = formatPrice(currentMarketData.currentPrice + (stopDistance * (action == 'Buy' ? (-1) : 1)))

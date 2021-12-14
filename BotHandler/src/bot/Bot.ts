@@ -1,3 +1,4 @@
+import { getRProfit } from '../index'
 import { ActiveTrade, RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
 import { getPositionUpdate, getTradeCall } from '../api/Api'
 import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
@@ -14,9 +15,11 @@ export default class Bot {
     tradingPermission: TradingPermission
     currentTrade: ActiveTrade | null
     tradeHistory: Transaction[]
-    riskProfile: RiskProfile 
+    riskProfile: RiskProfile
+    id: number
 
-    constructor(token: string, tradingPermission: TradingPermission, name: string, riskProfile = defaultRiskProfile, currentTrade: ActiveTrade | null = null) {
+    constructor(id: number, token: string, tradingPermission: TradingPermission, name: string, riskProfile = defaultRiskProfile, currentTrade: ActiveTrade | null = null) {
+        this.id = id
         this.authToken = token
         this.tradingPermission = tradingPermission
         this.name = name
@@ -32,25 +35,29 @@ export default class Bot {
             // looking for a trade
             getTradeCall(this.authToken, data)
             .then(res => {
-                console.log(res)
+                this.log(res)
                 if (res.confidence > this.riskProfile.tradeThreshhold) {
                     openPosition(this, res.action, this.riskProfile.stopLossDistance)
                 }
             })
             .catch(err => {
-                console.log(err)
+                this.log(err)
             })
         } else {
             // currently in a trade
+            
+            this.log(
+                'current position:',
+                {entryPrice: this.currentTrade?.entryPrice, stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit},
+                'current r profit: ' + getRProfit(this.currentTrade.entryPrice || 1, this.currentTrade.originalStopLoss, this.currentTrade.exitPrice || 1)
+            )
+            
             getPositionUpdate(this.authToken, this.currentTrade, currentPrice)
             .then(res => {
-                console.log('current price: ' + currentPrice)
-                console.log('current position:')
-                console.log({stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit})
-
                 if (!this.currentTrade) {
-                    throw('cant be throwed, but typescript wants me to write this')
+                    return // position is closed, while the api request got fulfilled
                 }
+
 
                 if (res.stopLoss != this.currentTrade.stopLoss) {
                     updateStopLoss(this, this.currentTrade, res.stopLoss)
@@ -61,7 +68,7 @@ export default class Bot {
                 }
             })
             .catch(err => {
-                console.log(err)
+                this.log(err)
             })
         }
 
@@ -82,13 +89,15 @@ export default class Bot {
     updatedPosition(newPosition: ActiveTrade) {
         this.currentTrade = newPosition
 
-        console.log('positon update:')
-        console.log({stopLoss: newPosition.stopLoss, takeProfit: newPosition.takeProfit})
+        this.log(
+            'positon update:',
+            {stopLoss: newPosition.stopLoss, takeProfit: newPosition.takeProfit}
+        )
     }
 
-    closedPosition(profit: number, exitPrice: number) {
+    closedPosition(profit: number, exitPrice: number): Transaction | null {
         if (!this.currentTrade) {
-            return
+            return null
         }
 
         this.currentTrade.exitPrice = exitPrice
@@ -103,9 +112,19 @@ export default class Bot {
         this.tradeHistory.push(newTrade)
         // set the active trade to null
         this.currentTrade = null
+
+        return newTrade
     }
    
     toString() {
         return `Hello, Im ${this.name}! I am trading ${this.tradingPermission}!`;
+    }
+
+    log(...msg: any) {
+        console.log(` --- ${this.name} --->`)
+        for (const m of msg) {
+            console.log(m)
+        }
+        console.log(` <---  ---`)
     }
 }

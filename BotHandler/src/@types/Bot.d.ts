@@ -5,10 +5,18 @@ export interface ActiveTrade {
     isFilled: boolean
     side: 'long' | 'short'
     entryPrice: number
-    originalStopLoss: number,
-    stopLoss: number,
+    originalStopLoss: number
+    stopLoss: number
     takeProfit: number | null
     exitPrice: number | null
+}
+export interface ClosedTrade {
+    side: 'long' | 'short'
+    entryPrice: number
+    originalStopLoss: number
+    stopLoss: number
+    takeProfit: number | null
+    exitPrice: number
 }
 export interface Transaction {
     entryPrice: number
