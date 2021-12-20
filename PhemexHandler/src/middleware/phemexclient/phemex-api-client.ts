@@ -105,6 +105,8 @@ export class PhemexClient {
 
     // Query user trade `GET /exchange/order/trade`
     public static async QueryUserTrades(params: any, options: PhemexRequestOptions = opt) {
+        assert(params, "No params were passed");
+        assert(params.symbol, "Parameter symbol is required");
         return await getRequest("/exchange/order/trade", params, options);
     }
 

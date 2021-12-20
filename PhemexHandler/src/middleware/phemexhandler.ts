@@ -57,11 +57,16 @@ export function getPrice(req: any, res: Response, next: NextFunction) {
 
 
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
-    const options = decryptOptions(req.token);
+    const options = decryptOptions(req.token)
 
     PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
     .then((data: any) => {
-        req.toSend = handleResponse(data)
+        data = handleResponse(data)
+        const formattedAccountData: any = {
+            userID: data.account.userID,
+            btcBalance: (data.account.accountBalanceEv / 100000000)
+        }
+        req.toSend = data//formattedAccountData
         next()
     })
     .catch((err) => {
@@ -71,12 +76,13 @@ export function getAccountInfo(req: any, res: Response, next: NextFunction) {
         logErr({message: msg}, req, res, next)
     })
 }
-export function getTrades(req: any, res: Response, next: NextFunction) {
-    const options = decryptOptions(req.token);
+// TODO:
+export function getActiveTrades(req: any, res: Response, next: NextFunction) {
+    const options = decryptOptions(req.token)
 
-    PhemexClient.QueryUserTrades({}, options)
+    PhemexClient.QueryUserTrades({symbol: 'BTCUSD'}, options)
     .then((data: any) => {
-        req.toSend = handleResponse(data)
+        req.toSend = data
         next()
     })
     .catch((err) => {
@@ -86,6 +92,23 @@ export function getTrades(req: any, res: Response, next: NextFunction) {
         logErr({message: msg}, req, res, next)
     })
 }
+// TODO:
+export function getActiveOrders(req: any, res: Response, next: NextFunction) {
+    const options = decryptOptions(req.token)
+
+    PhemexClient.QueryOpenOrdersBySymbol({symbol: 'BTCUSD'}, options)
+    .then((data: any) => {
+        req.toSend = data
+        next()
+    })
+    .catch((err) => {
+        console.log('phemex responded with error:', err)
+        let msg = logErrorCode(err)
+        // throw({message: msg})
+        logErr({message: msg}, req, res, next)
+    })
+}
+
 
 
 
@@ -108,19 +131,21 @@ function decryptOptions(token: string): PhemexRequestOptions {
 
     return options;
 }
-function logErrorCode(code: string): string {
+function logErrorCode(err: any): string {
     let codes: any = errorCodes;
+    const code = err.code
     let error = codes[code];
+
     if (error) {
         console.log(error.message);
         console.log(error.details);
     } else {
-        console.log(code);
+        console.log(code, err.msg);
     }
     if (error) {
         return error.details;
     } else {
-        return code;
+        return err.msg;
     }
 }
 function handleResponse(res: any) {

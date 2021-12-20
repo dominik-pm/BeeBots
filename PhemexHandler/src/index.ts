@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import express, {Application, Request, Response, NextFunction } from 'express'
 import authenticate from './middleware/authenticate'
 import { logErr, logTime } from './middleware/logger'
-import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler'
+import { getAccountInfo, getActiveOrders, getActiveTrades, getMarketAnalysis, getPrice, test } from './middleware/phemexhandler'
 import { startLiveData } from './middleware/phemexclient/phemex-livedata'
 
 dotenv.config({path: './variables.env'})
@@ -34,11 +34,14 @@ app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
 })
 
 app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
-    // TODO: not working (api-signature-verification failed -> unhandled rejection)
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
-app.get('/userTrades', authenticate, getTrades, (req: any, res: Response) => {
+app.get('/opentrades', authenticate, getActiveTrades, (req: any, res: Response) => {
+    let resObj = getResObject(req, res)
+    res.status(200).send(resObj)
+})
+app.get('/openorders', authenticate, getActiveOrders, (req: any, res: Response) => {
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })

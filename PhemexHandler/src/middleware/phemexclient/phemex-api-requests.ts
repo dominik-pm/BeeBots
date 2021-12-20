@@ -99,7 +99,7 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
             // console.log(res.body)
             
             if (!res.body.result && res.body.code != 0 && !res.body.error) {
-                reject(res.body.code);
+                reject({msg: res.body.msg, code: res.body.code});
             } else {
                 // TODO: phemex sends different formats for diff requests
                 let res = body.data
