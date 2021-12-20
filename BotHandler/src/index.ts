@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import { MarketData } from './@types/api/PhemexHandler'
 import { ActiveTrade, ClosedTrade } from './@types/Bot'
 import { getActiveBots, getMarketData, saveBotTransaction } from './api/Api'
+import * as mongoDB from 'mongodb'
 import Bot from './bot/Bot'
 
 const DATA_INTERVAL = 10000
@@ -12,12 +13,33 @@ dotenv.config({path: './variables.env'})
 
 console.log('Bot Handler started')
 
-
 const secret = process.env.ACCESS_TOKEN_SECRET
 if (!secret) {
     throw('Could not load access token!')
 }
 export const secretToken: string = secret
+
+
+const connectionString = process.env.MONGO_CONNECTION
+if (!connectionString) {
+    throw('Could not load connection string!')
+} else {
+    connectToDatabase(connectionString)
+}
+
+export async function connectToDatabase(connectionString: string) {
+    const client: mongoDB.MongoClient = new mongoDB.MongoClient(connectionString);
+            
+    await client.connect();
+    
+    const db: mongoDB.Db = client.db('MarketHistory');
+   
+    const btcHistory: mongoDB.Collection = db.collection('BitcoinHistory');
+ 
+    console.log(`Successfully connected to database: ${db.databaseName} and collection: ${btcHistory.collectionName}`);
+    // console.log(btcHistory)
+}
+
 
 console.log('fetching active bots...')
 getActiveBots()
