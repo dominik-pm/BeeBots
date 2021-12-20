@@ -49,7 +49,7 @@ export default class Bot {
             this.log(
                 'current position:',
                 {entryPrice: this.currentTrade?.entryPrice, stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit},
-                'current r profit: ' + getRProfit(this.currentTrade.entryPrice || 1, this.currentTrade.originalStopLoss, this.currentTrade.exitPrice || 1)
+                'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss, currentPrice)
             )
             
             getPositionUpdate(this.authToken, this.currentTrade, currentPrice)

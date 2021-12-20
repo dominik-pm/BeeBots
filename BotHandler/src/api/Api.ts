@@ -7,6 +7,7 @@ import { BuyAlgoRequest, BuyAlgoResponse } from '../@types/api/BuyAlgo'
 import { PositionAlgoRequest, PositionAlgoResponse } from '../@types/api/PositionAlgo'
 import { MarketData } from '../@types/api/PhemexHandler'
 import { formatPrice } from '../helper'
+import https from 'https'
 
 
 function formatAxiosError(err: AxiosError) {

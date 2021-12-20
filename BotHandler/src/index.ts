@@ -5,7 +5,7 @@ import { getActiveBots, getMarketData, saveBotTransaction } from './api/Api'
 import Bot from './bot/Bot'
 
 const DATA_INTERVAL = 10000
-export let currentMarketData: MarketData;
+export let currentMarketData: MarketData
 
 dotenv.config({path: './variables.env'})
 
@@ -17,8 +17,7 @@ const secret = process.env.ACCESS_TOKEN_SECRET
 if (!secret) {
     throw('Could not load access token!')
 }
-export const secretToken: string = secret;
-
+export const secretToken: string = secret
 
 console.log('fetching active bots...')
 getActiveBots()
@@ -27,7 +26,7 @@ getActiveBots()
 
     manageBots(bots)
     setInterval(() => {
-        manageBots(bots)
+       manageBots(bots)
     }, DATA_INTERVAL)
 })
 
@@ -142,7 +141,7 @@ function botHitTakeProfit(bot: Bot, activeTrade: ActiveTrade) {
 export function getRProfit(entryPrice: number, stopLoss: number, exitPrice: number): number {
     const stopDistance = entryPrice - stopLoss
     const profitDistance = exitPrice - entryPrice
-    const rProfit = Math.trunc(Math.round((profitDistance / stopDistance)*100))
+    const rProfit = Math.trunc(Math.round((profitDistance / stopDistance)*100)) / 100
 
     return rProfit
 }
