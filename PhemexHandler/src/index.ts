@@ -33,7 +33,7 @@ app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
     res.status(200).send(resObj)
 })
 
-app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
+app.get('/account', authenticate, getAccountInfo, (req: any, res: Response) => {
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
