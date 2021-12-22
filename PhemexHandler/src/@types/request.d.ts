@@ -6,6 +6,18 @@ export declare type PhemexRequestOptions = {
     secret: string
 }
 
+export declare type PhemexAccountInfo = {
+    account: {
+        userID: 905717,
+        accountId: 9057170001,
+        currency: string,
+        accountBalanceEv: 35253484,
+        totalUsedBalanceEv: 42189,
+        bonusBalanceEv: 0
+    },
+    positions: PhemexAccountPosition[]
+}
+
 export declare type PhemexAccountPosition = {
     userID: number,
     accountID: number,

@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import express, {Application, Request, Response, NextFunction } from 'express'
 import authenticate from './middleware/authenticate'
 import { logErr, logTime } from './middleware/logger'
-import { getAccountInfo, getActiveOrders, getActiveTrades, getMarketAnalysis, getPrice, test } from './middleware/phemexhandler'
+import { getAccountInfo, getActiveOrders, getActiveTrade, getClosedTrades, getMarketAnalysis, getPrice, test } from './middleware/phemexhandler'
 import { startLiveData } from './middleware/phemexclient/phemex-livedata'
 
 dotenv.config({path: './variables.env'})
@@ -37,7 +37,11 @@ app.get('/account', authenticate, getAccountInfo, (req: any, res: Response) => {
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
-app.get('/opentrades', authenticate, getActiveTrades, (req: any, res: Response) => {
+app.get('/opentrade', authenticate, getActiveTrade, (req: any, res: Response) => {
+    let resObj = getResObject(req, res)
+    res.status(200).send(resObj)
+})
+app.get('/closedtrades', authenticate, getClosedTrades, (req: any, res: Response) => {
     let resObj = getResObject(req, res)
     res.status(200).send(resObj)
 })
