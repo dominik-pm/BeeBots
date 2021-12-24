@@ -1,26 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
-import { PhemexClient } from './phemexclient/phemex-api-client'
-import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
-import { decryptToJSON } from '../helper/crypt';
-import { EncryptionObject } from '../@types/crypt';
-import { PhemexAccountInfo, PhemexAccountPosition, PhemexClosedTrade, PhemexOpenOrder, PhemexRequestOptions } from '../@types/phemexapi';
-import errorCodes from './phemexclient/errorcodes.json';
-import { livePrice } from './phemexclient/phemex-livedata';
-import testCcxt from './phemexclient/phemex-api-req-ccxt';
-import { logErr } from './logger';
-import { resolve } from 'path/posix';
-import { rejects } from 'assert';
-import { OpenOrder } from '../@types/phemexhandler';
+import { PhemexAccountInfo, PhemexAccountPosition, PhemexClosedTrade, PhemexOpenOrder, PhemexRequestOptions } from '../@types/phemexapi'
+import { OpenOrder } from '../@types/phemexhandler'
+import { decryptOptions, handleResponse, logErrorCode } from '../helper/phemexapihelper'
+import { PhemexClient } from '../phemexclient/phemex-api-client'
+import { logErr } from '../middleware/logger'
 
-interface Payload {
-    iv: string,
-    encryptedData: string,
-    isLivenet: false
-}
-interface EncryptedApiKeys {
-    apiKey: string,
-    apiSecretKey: string
-}
+
 
 
 export function test() {
@@ -39,25 +24,6 @@ export function test() {
     // return PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
 
 }
-
-export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
-    PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
-    .then((data: any) => {
-        req.toSend.marketData = handleResponse(data)
-        next()
-    })
-    .catch((err) => {
-        console.log('phemex responded with error:', err)
-        let msg = logErrorCode(err)
-        // throw({message: msg})    // TODO: logErr should be called when throwing
-        logErr({message: msg}, req, res, next)
-    })
-}
-export function getPrice(req: any, res: Response, next: NextFunction) {
-    req.toSend.currentPrice = livePrice
-    next()
-}
-
 
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
@@ -113,7 +79,7 @@ export function getClosedTrades(req: any, res: Response, next: NextFunction) {
     .then(trades => {
         // const formattedTrades = getTrades(trades)
 
-        req.toSend = trades//formattedTrades
+        req.toSend = {trades: trades}//formattedTrades
         next()
     })
     .catch((err) => {
@@ -133,7 +99,7 @@ export function getActiveOrders(req: any, res: Response, next: NextFunction) {
 
         const formattedOrders = getOrders(orders)
 
-        req.toSend = formattedOrders
+        req.toSend = {orders: formattedOrders}
         next()
     })
     .catch((err) => {
@@ -313,50 +279,4 @@ function getTrades(data: PhemexClosedTrade[]): any {
     })
 
     return formattedTrades
-}
-
-function decryptOptions(token: string): PhemexRequestOptions {
-    // get payload out of token
-    let payload = <Payload>jwt.decode(token)
-    // console.log('payload: ', payload)
-
-    let encrypted: EncryptionObject = {
-        iv: payload.iv,
-        encryptedData: payload.encryptedData
-    }
-    const decryptedKeys = <EncryptedApiKeys>decryptToJSON(encrypted)
-
-    const options: PhemexRequestOptions = {
-        apiKey: decryptedKeys.apiKey,
-        secret: decryptedKeys.apiSecretKey,
-        isLivenet: payload.isLivenet
-    }
-
-    return options;
-}
-function logErrorCode(err: any): string {
-    let codes: any = errorCodes;
-    const code = err.code
-    let error = codes[code];
-
-    if (error) {
-        console.log(error.message);
-        console.log(error.details);
-    } else {
-        console.log(code, err.msg);
-    }
-    if (error) {
-        return error.details;
-    } else {
-        return err.msg;
-    }
-}
-function handleResponse(res: any) {
-    console.log('res', res)
-    const { error, result } = res
-    if (error) {
-        throw(error)
-    } else {
-        return result
-    }
 }

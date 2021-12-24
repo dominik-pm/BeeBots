@@ -1,8 +1,9 @@
 import assert from "assert";
-import { PhemexRequestOptions } from "../../@types/phemexapi";
+import { PhemexRequestOptions } from "../@types/phemexapi";
 import { deleteRequest, getRequest, postRequest, putRequest } from "./phemex-api-requests";
 
 const opt: PhemexRequestOptions = {
+    
     apiKey: 'asdasd',
     isLivenet: false,
     secret: 'sadsad'

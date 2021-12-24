@@ -1,6 +1,6 @@
 import request from 'request';
 import { createHmac } from 'crypto';
-import { PhemexRequestOptions } from '../../@types/phemexapi';
+import { PhemexRequestOptions } from '../@types/phemexapi';
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
