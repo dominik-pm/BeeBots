@@ -1,4 +1,6 @@
-declare module 'request';
+import { fillStatus, orderSide, orderType } from "./phemexhandler"
+
+declare module 'phemexapi'
 
 export declare type PhemexRequestOptions = {
     isLivenet: boolean,
@@ -8,22 +10,21 @@ export declare type PhemexRequestOptions = {
 
 export declare type PhemexAccountInfo = {
     account: {
-        userID: 905717,
-        accountId: 9057170001,
+        userID: number,
+        accountId: number,
         currency: string,
-        accountBalanceEv: 35253484,
-        totalUsedBalanceEv: 42189,
-        bonusBalanceEv: 0
+        accountBalanceEv: number,
+        totalUsedBalanceEv: number,
+        bonusBalanceEv: number
     },
     positions: PhemexAccountPosition[]
 }
-
 export declare type PhemexAccountPosition = {
     userID: number,
     accountID: number,
     symbol: string,
     currency: string,
-    side: 'Buy' | 'Sell',
+    side: orderSide,
     positionStatus: Normal,
     crossMargin: false,
     leverageEr: number,
@@ -87,16 +88,15 @@ export declare type PhemexAccountPosition = {
     curTermRealisedPnlEv: number,
     execSeq: number
 }
-
 export declare type PhemexOpenOrder = {
     bizError: number,
     orderID: string,
     clOrdID: string,
     symbol: string,
-    side: 'Buy' | 'Sell',
+    side: orderSide,
     actionTimeNs: number,
     transactTimeNs: number,
-    orderType: 'Limit' | 'Stop',
+    orderType: orderType,
     priceEp: number,
     price: number,
     orderQty: number,
@@ -120,4 +120,26 @@ export declare type PhemexOpenOrder = {
     execStatus: string,
     pegPriceType: string,
     ordStatus: string
+}
+export declare type PhemexClosedTrade = {
+    transactTimeNs: number,
+    symbol: string,
+    currency: string,
+    action: string,
+    side: orderSide,
+    tradeType: string,
+    execQty: number,
+    execPriceEp: number,
+    orderQty: number,
+    priceEp: number,
+    execValueEv: number,
+    feeRateEr: number,
+    execFeeEv: number,
+    closedSize: number,
+    closedPnlEv: number,
+    ordType: orderType,
+    execID: string,
+    orderID: string,
+    clOrdID: string,
+    execStatus: fillStatus
 }
