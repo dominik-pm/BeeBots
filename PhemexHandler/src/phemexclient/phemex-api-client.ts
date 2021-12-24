@@ -1,11 +1,34 @@
-import assert from "assert";
-import { PhemexRequestOptions } from "../../@types/request";
-import { deleteRequest, getRequest, postRequest, putRequest } from "./phemex-api-requests";
+import assert from 'assert'
+import { PhemexRequestOptions } from '../@types/phemexapi'
+import { orderSide, orderType } from '../@types/phemexhandler'
+import { deleteRequest, getRequest, postRequest, putRequest } from './phemex-api-requests'
 
 const opt: PhemexRequestOptions = {
     apiKey: 'asdasd',
     isLivenet: false,
     secret: 'sadsad'
+}
+
+export declare type OrderTrigger = 'ByMarkPrice' | 'ByLastPrice'
+
+export declare type Parameters = {
+    symbol?: string,
+    clOrdID?: string,
+    side?: orderSide,
+    orderQty?: number,
+    priceEp?: number,
+    ordType?: orderType,
+    stopPxEp?: number,
+    timeInForce?: 'GoodTillCancel' | 'PostOnly' | 'ImmediateOrCancel' | 'FillOrKill',
+    reduceOnly?: boolean,
+    closeOnTrigger?: boolean,
+    triggerType?: OrderTrigger,
+    takeProfitEp?: number,
+    stopLossEp?: number,
+    slTrigger?: OrderTrigger,
+    tpTrigger?: OrderTrigger,
+    pegOffsetValueEp?: number,
+    pegPriceType?: string, // ?
 }
 
 export class PhemexClient {
@@ -15,7 +38,7 @@ export class PhemexClient {
     }
 
     // Trade API List `POST /orders`
-    public static async PlaceOrder(params: any, options: PhemexRequestOptions = opt) {
+    public static async PlaceOrder(params: Parameters, options: PhemexRequestOptions = opt) {
         assert(params, "No params were passed");
         assert(params.symbol, "Parameter symbol is required");
         assert(params.clOrdID, "Parameter clOrdID is required");
@@ -105,6 +128,8 @@ export class PhemexClient {
 
     // Query user trade `GET /exchange/order/trade`
     public static async QueryUserTrades(params: any, options: PhemexRequestOptions = opt) {
+        assert(params, "No params were passed");
+        assert(params.symbol, "Parameter symbol is required");
         return await getRequest("/exchange/order/trade", params, options);
     }
 

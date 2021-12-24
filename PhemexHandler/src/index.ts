@@ -1,59 +1,53 @@
 import dotenv from 'dotenv'
 import express, {Application, Request, Response, NextFunction } from 'express'
-import authenticate from './middleware/authenticate'
 import { logErr, logTime } from './middleware/logger'
-import { getAccountInfo, getMarketAnalysis, getPrice, getTrades, test } from './middleware/phemexhandler'
-import { startLiveData } from './middleware/phemexclient/phemex-livedata'
+import sendResObj from './middleware/resultobject'
+import { startLiveData } from './phemexclient/phemex-livedata'
+import accountRoutes from './routes/account'
+import marketDataRoutes from './routes/marketdata'
+import orderRoutes from './routes/order'
 
 dotenv.config({path: './variables.env'})
 
 export const app: Application = express()
 const port: String | Number = process.env.PORT || 8085
 
-app.use(express.json());
+app.use(express.json())
 app.use(logTime)
 app.use((req: any, res: Response, next: NextFunction) => {
     req.toSend = {}
     next()
 })
 
+
+
+// -- routes -->
+
 app.get('/', (req: Request, res: Response) => {
     res.status(200).send({message: 'working'})
 })
 
-app.get('/marketdata', authenticate, getMarketAnalysis, getPrice, (req: any, res: Response) => {
-    let resObj = getResObject(req, res)
-    res.status(200).send(resObj)
-})
-app.get('/price', authenticate, getPrice, (req: any, res: Response) => {
-    let resObj = getResObject(req, res);
-    if (!req.toSend.currentPrice) {
-        //throw {status: 400, message: 'Not ready yet!'}
-    }
-    res.status(200).send(resObj)
-})
 
-app.get('/accountInfo', authenticate, getAccountInfo, (req: any, res: Response) => {
-    // TODO: not working (api-signature-verification failed -> unhandled rejection)
-    let resObj = getResObject(req, res)
-    res.status(200).send(resObj)
-})
-app.get('/userTrades', authenticate, getTrades, (req: any, res: Response) => {
-    let resObj = getResObject(req, res)
-    res.status(200).send(resObj)
-})
+app.use('/account', accountRoutes, sendResObj)
+app.use('/marketdata', marketDataRoutes, sendResObj)
+app.use('/order', orderRoutes, sendResObj)
+
 
 app.get('/*', (req, res) => {
     throw {status: 404, message: 'Not found'}
 })
 
-app.use(logErr);
+app.use(logErr)
+
+// <-- routes --
+
+
 
 // when running tests, dont start a server (testscript already does)
 if (process.env.NODE_ENV != 'test') {
 
     let server = app.listen(port, () => {
-        let host = 'localhost';
+        let host = 'localhost'
         // host = server.address().host;
         host = host == '::' ? 'localhost' : host
         let p = port
@@ -71,14 +65,4 @@ if (process.env.NODE_ENV != 'test') {
         // })
     })
 
-}
-
-
-function getResObject(req: any, res: Response) {
-    let resObj = req.toSend
-    if (!resObj) {
-        res.status(200).send({})
-        console.log('No response data')
-    }
-    return resObj
 }
