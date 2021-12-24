@@ -38,6 +38,7 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
 
         if (position) {
             next({status: 400, message: 'Can not place entry when there is an open position!'})
+            return
         }
 
         // cancel all orders
@@ -88,7 +89,7 @@ export function placeTakeProfit(req: any, res: Response, next: NextFunction) {
 
     if (!takeProfit) {
         next({status: 400, message: 'Invalid Take Profit'})
-
+        return
     }
 
     // GET CURRENT POSITION (for side + quantity)
@@ -331,7 +332,7 @@ function postTakeProfit(side: orderSide, price: number, quantity: number, option
         clOrdID: generateRandomID(),
         side,
         reduceOnly: true,
-        timeInForce: 'PostOnly',
+        timeInForce: 'GoodTillCancel',
         orderQty: quantity,
         priceEp: priceToPriceEp(price),
         ordType: 'Limit',
