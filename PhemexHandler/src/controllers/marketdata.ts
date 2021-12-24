@@ -11,6 +11,7 @@ export function getMarketAnalysis(req: any, res: Response, next: NextFunction) {
     PhemexClient.Query24HourTicker({symbol: 'BTCUSD'})
     .then((data: any) => {
         req.toSend.marketData = handleResponse(data)
+        req.toSend.currentPrice = livePrice
         next()
     })
     .catch((err) => {

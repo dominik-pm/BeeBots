@@ -25,6 +25,10 @@ export function test() {
 
 }
 
+declare type AccountInfoResponse = {
+    userID: number,
+    btcBalance: number
+}
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
 
@@ -168,10 +172,10 @@ export function queryPhemexOrders(options: any): Promise<OpenOrder[]> {
 }
 
 
-function getAccountData(data: PhemexAccountInfo): any {
+function getAccountData(data: PhemexAccountInfo): AccountInfoResponse | null {
     if (!data) return null
     
-    const formattedAccountData = {
+    const formattedAccountData: AccountInfoResponse = {
         userID: data.account.userID,
         btcBalance: (data.account.accountBalanceEv / 100000000)
     }

@@ -1,12 +1,13 @@
 import dotenv from 'dotenv'
-import { MarketData } from './@types/api/PhemexHandler'
+import { MarketDataResponse } from './@types/api/PhemexHandler'
 import { ActiveTrade, ClosedTrade } from './@types/Bot'
-import { getActiveBots, getMarketData, saveBotTransaction } from './api/Api'
-import * as mongoDB from 'mongodb'
 import Bot from './bot/Bot'
+import { getActiveBots, saveBotTransaction } from './api/Backend'
+import { closeAll, getMarketData } from './api/PhemexHandler'
+import { connectToDatabase } from './database/mongoconnection'
 
 const DATA_INTERVAL = 10000
-export let currentMarketData: MarketData
+export let currentMarketData: MarketDataResponse
 
 dotenv.config({path: './variables.env'})
 
@@ -22,22 +23,9 @@ export const secretToken: string = secret
 
 const connectionString = process.env.MONGO_CONNECTION
 if (!connectionString) {
-    throw('Could not load connection string!')
+    console.log('Could not load connection string!')
 } else {
     connectToDatabase(connectionString)
-}
-
-export async function connectToDatabase(connectionString: string) {
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(connectionString);
-            
-    await client.connect();
-    
-    const db: mongoDB.Db = client.db('MarketHistory');
-   
-    const btcHistory: mongoDB.Collection = db.collection('BitcoinHistory');
- 
-    console.log(`Successfully connected to database: ${db.databaseName} and collection: ${btcHistory.collectionName}`);
-    // console.log(btcHistory)
 }
 
 
@@ -46,13 +34,26 @@ getActiveBots()
 .then(bots => {
     console.log(`Got ${bots.length} bots!`)
 
-    manageBots(bots)
+    validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
+
+    // manageBots(bots)
     setInterval(() => {
        manageBots(bots)
     }, DATA_INTERVAL)
 })
 
-function validateBotAccounts() {
+function validateBotAccounts(bots: Bot[]) {
+    // TODO:
+    bots.forEach(bot => {
+        closeAll(bot.authToken)
+        .then(res => {
+            console.log(res)
+        })
+        .catch(err => {
+            err
+        })
+    })
+
     // -> trading on phemex
     // 1. get account info
     // getAccountInfo(bot.authToken) // is stuck -> no response
@@ -73,8 +74,7 @@ function validateBotAccounts() {
 function manageBots(bots: Bot[]): void {
 
     getMarketData()
-    .then(data => {
-        currentMarketData = data
+    .then(currentMarketData => {
         const { currentPrice, marketData } = currentMarketData
 
         console.log(`Got market data!`)
@@ -83,7 +83,7 @@ function manageBots(bots: Bot[]): void {
         bots.forEach(bot => {
             checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
 
-            bot.decideAction(data)
+            bot.decideAction(currentMarketData)
         })
 
     })
@@ -129,7 +129,6 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
     } else {
         // TODO:
-        console.log(`API Trading not implemented`)
         // 1. check if the trade is still open
         // 2. if not -> get the trade result
     }

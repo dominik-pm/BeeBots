@@ -1,7 +1,8 @@
 import { getRProfit } from '../index'
 import { ActiveTrade, RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
-import { getPositionUpdate, getTradeCall } from '../api/Api'
 import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
+import { getTradeCall } from '../api/BuyAlgo'
+import { getPositionUpdate } from '../api/PositionAlgo'
 
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade

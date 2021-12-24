@@ -6,7 +6,7 @@ import { validateParams } from '../middleware/validateBodyParameters'
 const router = express.Router()
 
 router.post('/placeentry', authenticate, validateParams([
-    {paramKey: 'orderID', required: true, type: 'string', validatorFunctions: [(param: any) => {return param.length >= 4}]},
+    {paramKey: 'orderID', required: false, type: 'string', validatorFunctions: [(param: any) => {return param.length >= 4}]},
     {paramKey: 'price', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0}]},
     {paramKey: 'stopLoss', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0}]}
 ]), Controller.placeEntry)

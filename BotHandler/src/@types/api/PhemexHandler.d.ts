@@ -1,6 +1,6 @@
 declare module 'phemexhandler'
 
-export interface MarketData {
+export interface MarketDataResponse {
     currentPrice: number,
     marketData: {
         close: number,

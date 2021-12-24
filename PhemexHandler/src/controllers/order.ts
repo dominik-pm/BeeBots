@@ -7,7 +7,7 @@ import { queryCurrentPosition, queryPhemexOrders } from './account'
 
 declare type PlaceEntryRequest = {
     price: number,
-    orderID: string,
+    orderID?: string,
     quantity: number,
     stopLoss: number,
     side: orderSide
@@ -27,9 +27,9 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
     const entryReq: PlaceEntryRequest = <PlaceEntryRequest>req.body
 
     const price = entryReq.price
-    const orderID = entryReq.orderID
+    const orderID = entryReq.orderID || generateRandomID()
     const stopLoss = entryReq.stopLoss
-    const quantity = 500
+    const quantity = 500//entryReq.quantity // TODO: should be a percentage of account -> also check leverage,...
     const side: orderSide = 'Buy'
 
     getPositionAndOrders(options)
@@ -213,6 +213,7 @@ export function placeStopLoss(req: any, res: Response, next: NextFunction) {
     })
 }
 
+// TODO: retuns server error when order doesnt exist
 export function cancelOrder(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
     
@@ -230,6 +231,7 @@ export function cancelOrder(req: any, res: Response, next: NextFunction) {
 
 }
 
+// TODO: return internal server error if there is no position open
 export function closeAll(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
     
