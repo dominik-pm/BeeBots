@@ -1,6 +1,6 @@
 declare module 'phemexhandler'
 
-export declare type orderType = 'Limit' | 'Market' | 'Stop'
+export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type fillStatus = 'TakerFill' | 'MakerFill'
 
@@ -18,6 +18,6 @@ export declare type Position = {
     side: orderSide,
     leverage: number,
     quantity: number,
-    stopLoss: number,
-    takeProfit: number
+    stopLoss: number | null,
+    takeProfit: number | null
 }

@@ -14,6 +14,24 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+export function priceToPriceEp(price: number): number {
+    return formatPrice(price) * 10000
+}
+export function priceEpToPrice(price: number): number {
+    return formatPrice(price / 10000)
+}
+export const formatPrice = (originalPrice: number): number => {
+    let price: number = Math.trunc(originalPrice*10)
+    if (price % 10 < 2) {
+        price = Math.trunc(price/10)
+    } else if (price % 10 < 8) {
+        price = Math.trunc(price/10) + 0.5
+    } else {
+        price = Math.trunc(price/10) + 1
+    }
+    return price
+}
+
 export function decryptOptions(token: string): PhemexRequestOptions {
     // get payload out of token
     let payload = <Payload>jwt.decode(token)

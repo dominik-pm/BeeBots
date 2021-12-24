@@ -1,3 +1,4 @@
+import { OrderTrigger } from "../phemexclient/phemex-api-client"
 import { fillStatus, orderSide, orderType } from "./phemexhandler"
 
 declare module 'phemexapi'
@@ -142,4 +143,38 @@ export declare type PhemexClosedTrade = {
     orderID: string,
     clOrdID: string,
     execStatus: fillStatus
+}
+
+export declare type PhemexOrderCreatedResponse = {
+    bizError: 0,
+    orderID: string,
+    clOrdID: string,
+    symbol: string,
+    side: orderSide,
+    actionTimeNs: 1640352721748348400,
+    transactTimeNs: 0,
+    orderType: orderType,
+    priceEp: 513000000,
+    price: 51300,
+    orderQty: 500,
+    displayQty: 0,
+    timeInForce: string, // GoodTillCancel, ...
+    reduceOnly: false,
+    closedPnlEv: 0,
+    closedPnl: 0,
+    closedSize: 0,
+    cumQty: 0,
+    cumValueEv: 0,
+    cumValue: 0,
+    leavesQty: 500,
+    leavesValueEv: 974658,
+    leavesValue: 0.00974658,
+    stopDirection: string,
+    stopPxEp: 0,
+    stopPx: 0,
+    trigger: OrderTrigger,
+    pegOffsetValueEp: 0,
+    execStatus: string,
+    pegPriceType: string,
+    ordStatus: string
 }

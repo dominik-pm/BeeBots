@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { PhemexAccountInfo, PhemexAccountPosition, PhemexClosedTrade, PhemexOpenOrder, PhemexRequestOptions } from '../@types/phemexapi'
-import { OpenOrder } from '../@types/phemexhandler'
+import { OpenOrder, Position } from '../@types/phemexhandler'
 import { decryptOptions, handleResponse, logErrorCode } from '../helper/phemexapihelper'
 import { PhemexClient } from '../phemexclient/phemex-api-client'
 import { logErr } from '../middleware/logger'
@@ -47,21 +47,10 @@ export function getAccountInfo(req: any, res: Response, next: NextFunction) {
 export function getActiveTrade(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
 
-    PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
-    .then((data: any) => {
-        data = handleResponse(data)
-
-        getPosition(options, <PhemexAccountInfo>data)
-        .then(position => {
-            req.toSend = {position}
-            next()
-        })
-        .catch(err => {
-            console.log('phemex responded with error:', err)
-            let msg = logErrorCode(err)
-            logErr({message: msg}, req, res, next)
-        })
-
+    queryCurrentPosition(options)
+    .then(position => {
+        req.toSend = {position}
+        next()
     })
     .catch((err) => {
         console.log('phemex responded with error:', err)
@@ -97,9 +86,7 @@ export function getActiveOrders(req: any, res: Response, next: NextFunction) {
     .then(orders => {
         console.log(orders)
 
-        const formattedOrders = getOrders(orders)
-
-        req.toSend = {orders: formattedOrders}
+        req.toSend = {orders}
         next()
     })
     .catch((err) => {
@@ -140,12 +127,35 @@ function queryPhemexClosedTrades(options: any): Promise<PhemexClosedTrade[]> {
     })
 }
 
-function queryPhemexOrders(options: any): Promise<PhemexOpenOrder[]> {
-    return new Promise<PhemexOpenOrder[]>((resolve, reject) => {
+export function queryCurrentPosition(options: PhemexRequestOptions) {
+    return new Promise<Position | null>((resolve, reject) => {
+
+        PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
+        .then((data: any) => {
+            data = handleResponse(data)
+
+            getPosition(options, <PhemexAccountInfo>data)
+            .then(position => {
+                resolve(position)
+            })
+            .catch(err => {
+                reject(err)
+            })
+
+        })
+        .catch((err) => {
+            reject(err)
+        })
+
+    })
+}
+
+export function queryPhemexOrders(options: any): Promise<OpenOrder[]> {
+    return new Promise<OpenOrder[]>((resolve, reject) => {
         PhemexClient.QueryOpenOrdersBySymbol({symbol: 'BTCUSD'}, options)
         .then((data: any) => {
             const orders: PhemexOpenOrder[] = <PhemexOpenOrder[]>data.result.rows
-            resolve(orders)
+            resolve(getOrders(orders))
         })
         .catch(err => {
             if (err.code && err.code == 10002) {
@@ -171,10 +181,10 @@ function getAccountData(data: PhemexAccountInfo): any {
 
     return formattedAccountData
 }
-async function getPosition(options: any, data: PhemexAccountInfo): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+async function getPosition(options: any, data: PhemexAccountInfo): Promise<Position | null> {
+    return new Promise<Position | null>((resolve, reject) => {
 
-        let position: any = null
+        let position: Position | null = null
 
         if (!data || !data.positions || data.positions.length == 0) resolve(null)
 
@@ -184,8 +194,7 @@ async function getPosition(options: any, data: PhemexAccountInfo): Promise<any> 
         if (!btcPosition || !btcPosition.avgEntryPrice) resolve(null)
 
         queryPhemexOrders(options)
-        .then(o => {
-            const orders = getOrders(o)
+        .then(orders => {
 
             let stopLoss = null
             let takeProfit = null
