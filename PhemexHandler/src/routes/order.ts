@@ -8,7 +8,8 @@ const router = express.Router()
 router.post('/placeentry', authenticate, validateParams([
     {paramKey: 'orderID', required: false, type: 'string', validatorFunctions: [(param: any) => {return param.length >= 4}]},
     {paramKey: 'price', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0}]},
-    {paramKey: 'stopLoss', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0}]}
+    {paramKey: 'stopLoss', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0}]},
+    {paramKey: 'quantity', required: true, type: 'number', validatorFunctions: [(param: any) => {return param > 0 && param < 1}]},
 ]), Controller.placeEntry)
 
 router.post('/placetakeprofit', authenticate, validateParams([

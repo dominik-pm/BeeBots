@@ -15,7 +15,7 @@ export default class Bot {
     authToken: string
     name: string
     tradingPermission: TradingPermission
-    currentTrade: ActiveTrade | null
+    currentTrade: ActiveTrade | null // TODO: maybe add risk amount to position (can vary when trading on phemex) -> to calculate R-profit
     tradeHistory: Transaction[]
     riskProfile: RiskProfile
     id: number

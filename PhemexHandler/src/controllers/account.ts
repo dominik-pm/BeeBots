@@ -32,16 +32,12 @@ declare type AccountInfoResponse = {
 export function getAccountInfo(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
 
-    PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
-    .then((data: any) => {
-        data = handleResponse(data)
-
-        const formattedAccountData = getAccountData(<PhemexAccountInfo>data)
-
-        req.toSend = formattedAccountData//data
+    queryAccountInfo(options)
+    .then(account => {
+        req.toSend = account
         next()
     })
-    .catch((err) => {
+    .catch(err => {
         console.log('phemex responded with error:', err)
         let msg = logErrorCode(err)
         // throw({message: msg})
@@ -102,6 +98,22 @@ export function getActiveOrders(req: any, res: Response, next: NextFunction) {
 }
 
 
+export function queryAccountInfo(options: any): Promise<AccountInfoResponse | null> {
+    return new Promise<AccountInfoResponse | null>((resolve, reject) => {
+        PhemexClient.QueryTradingAccountAndPositions({currency: 'BTC'}, options)
+        .then((data: any) => {
+            data = handleResponse(data)
+
+            const formattedAccountData = getAccountData(<PhemexAccountInfo>data)
+
+            resolve(formattedAccountData)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+
+    })
+}
 
 // TODO: not working / cant get pnl details
 function queryPhemexClosedTrades2(options: any): Promise<PhemexClosedTrade[]> {

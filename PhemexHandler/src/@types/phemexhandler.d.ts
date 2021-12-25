@@ -24,6 +24,7 @@ export declare type Position = {
 }
 
 export declare type ClosedTrade = {
+    transactTimeNs: number,
     orderID: string,
     clOrdID: string,
     side: orderSide,
