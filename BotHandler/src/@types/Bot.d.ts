@@ -1,9 +1,18 @@
 declare module 'bot'
 
 export declare type TradingPermission = 'live' | 'testnet' | 'simulated'
+export declare type Action = 'long' | 'short'
+
+export interface BotAccountInfo {
+    activeLimitEntryOrderID: string | null = null,
+    balance: number,
+    entryOrderID: string | null,
+    entryPnl: number
+}
+
 export interface ActiveTrade {
     isFilled: boolean
-    side: 'long' | 'short'
+    side: Action
     entryPrice: number
     originalStopLoss: number
     stopLoss: number | null
@@ -11,7 +20,7 @@ export interface ActiveTrade {
     exitPrice: number | null
 }
 export interface ClosedTrade {
-    side: 'long' | 'short'
+    side: Action
     entryPrice: number
     originalStopLoss: number
     stopLoss: number

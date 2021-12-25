@@ -11,8 +11,6 @@ router.get('/openposition', authenticate, Controller.getActiveTrade)
 
 router.get('/openorders', authenticate, Controller.getActiveOrders)
 
-
-
 router.get('/closedtrades', authenticate, Controller.getClosedTrades)
 
 

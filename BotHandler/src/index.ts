@@ -3,7 +3,7 @@ import { MarketDataResponse } from './@types/api/PhemexHandler'
 import { ActiveTrade, ClosedTrade } from './@types/Bot'
 import Bot from './bot/Bot'
 import { getActiveBots, saveBotTransaction } from './api/Backend'
-import { closeAll, getMarketData, getOpenPosition } from './api/PhemexHandler'
+import { closeAll, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
 import { connectToDatabase } from './database/mongoconnection'
 
 const DATA_INTERVAL = 10000
@@ -40,6 +40,10 @@ getActiveBots()
     setInterval(() => {
        manageBots(bots)
     }, DATA_INTERVAL)
+})
+.catch(err => {
+    console.log('Cant get active bots:')
+    console.log(err)
 })
 
 function validateBotAccounts(bots: Bot[]) {
@@ -79,6 +83,7 @@ function manageBots(bots: Bot[]): void {
 
     })
     .catch(err => {
+        console.log('Cant get market data:')
         console.log(err)
     })
 
@@ -120,7 +125,6 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
 
     } else {
-        // TODO:
         getOpenPosition(bot.authToken)
         .then(position => {
             // 1. check if bot is in a trade
@@ -140,6 +144,58 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
                 // position is closed -> get profit and close the bots position
                 else {
+                    console.log('Position Closed!')
+                    getClosedTrades(bot.authToken)
+                    .then(trades => {
+                        if (!bot.currentTrade) {
+                            console.log('Bot position got removed before being able to calculate the details')
+                            return
+                        }
+                        const entryFill = trades.find(trade => trade.orderID == bot.phemexAccountInfo.entryOrderID)
+                        if (!entryFill) {
+                            console.log('could not get entry fill order!')
+                            return
+                        }
+
+                        const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity) // TODO: find on orderID
+                        
+                        console.log('closed fills:', closedFills)
+
+                        let exitPnl = 0
+                        let avgExit = 0
+                        closedFills.forEach(trade => {
+                            exitPnl += trade.closedPnl - trade.execFee
+                            avgExit += trade.execPrice // TODO: price
+                        })
+                        avgExit /= closedFills.length
+
+                        const netProfit = exitPnl + bot.phemexAccountInfo.entryPnl
+                        
+                        console.log('pnl: ' + netProfit)
+
+                        // TODO: copy paste code
+                        const newTrade = bot.closedPosition(netProfit / bot.phemexAccountInfo.balance, avgExit)
+
+                        console.log(`${bot.name} trade history: `)
+                        console.log(bot.tradeHistory)
+                    
+                        if (newTrade) {
+                            saveBotTransaction(bot.id, newTrade, bot.authToken)
+                            .then(res => {
+                                console.log(`${bot.name}: Successfully saved transaction to the database!`)
+                                console.log(res)
+                            })
+                            .catch(err => {
+                                console.log(`${bot.name}: Could not save the transaction to the database!`)
+                                console.log(err)
+                            })
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Can not get Closed Trades')
+                        console.log(err)
+                    })
+                    
                     // bot.closedPosition()
                 }
             } 
@@ -155,14 +211,37 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         bot.openedPosition(position.entryPrice, position.side == 'Buy' ? 'long' : 'short', position.stopLoss, position.takeProfit)
                     } else {
                         console.log('New position does not have a Stop Loss!')
-                        // closeAll(bot.authToken)
-                        // .then(res => {
-                        //     console.log('Closed position!')
-                        // })
-                        // .catch(err => {
-                        //     console.log('Error when trying to close the position!')
-                        //     console.log(err)
-                        // })
+                        closeAll(bot.authToken)
+                        .then(res => {
+                            console.log('Closed position!')
+                        })
+                        .catch(err => {
+                            console.log('Error when trying to close the position!')
+                            console.log(err)
+                        })
+                    }
+                } else {
+                    if (bot.phemexAccountInfo.activeLimitEntryOrderID) {
+                        // bot is waiting for an entry to fill
+                        console.log(bot.name + ' wating for entry')
+                        
+                        // check if it is filled
+                        getClosedTrades(bot.authToken)
+                        .then(trades => {
+                            const filledTrade = trades.find(t => t.orderID == bot.phemexAccountInfo.activeLimitEntryOrderID)
+                            if (filledTrade) {
+                                // limit is filled
+                                bot.phemexAccountInfo.entryOrderID = bot.phemexAccountInfo.activeLimitEntryOrderID
+                                bot.phemexAccountInfo.activeLimitEntryOrderID = null
+                                console.log(bot.name + ' filled entry at: ' + filledTrade.execPrice)
+
+                                // bot.open position happens next time when scanning for current position on phemex
+                            }
+                        })
+                        .catch(err => {
+                            console.log('Cant get closed trades:')
+                            console.log(err)
+                        })
                     }
                 }
             }
@@ -211,7 +290,7 @@ function botClosePosition(bot: Bot, closedTrade: ClosedTrade) {
 
     const rProfit = getRProfit(closedTrade.entryPrice, closedTrade.originalStopLoss, closedTrade.exitPrice)
 
-    const newTrade = bot.closedPosition(rProfit, closedTrade.exitPrice)
+    const newTrade = bot.closedPosition(rProfit/**bot.riskProfile.capitalRiskPerTrade*/, closedTrade.exitPrice)
 
     console.log(`${bot.name} trade history: `)
     console.log(bot.tradeHistory)

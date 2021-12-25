@@ -123,6 +123,37 @@ export declare type PhemexOpenOrder = {
     ordStatus: string
 }
 export declare type PhemexClosedTrade = {
+    orderID: string,
+    clOrdID: string,
+    symbol: string,
+    side: orderSide,
+    orderType: orderType,
+    actionTimeNs: 1640425651318545700,
+    priceEp: 530765000,
+    price: null,
+    orderQty: 500,
+    displayQty: 0,
+    timeInForce: string,
+    reduceOnly: false,
+    takeProfitEp: 0,
+    takeProfit: null,
+    stopLossEp: 0,
+    closedPnlEv: 212,
+    closedPnl: null,
+    closedSize: 500,
+    cumQty: 500,
+    cumValueEv: 981913,
+    cumValue: null,
+    leavesQty: 0,
+    leavesValueEv: 0,
+    leavesValue: null,
+    stopLoss: null,
+    stopDirection: string,
+    ordStatus: orderStatus,
+    transactTimeNs: 1640425651321616100,
+    bizError: 0
+}
+export declare type PhemexUserTrade = {
     transactTimeNs: number,
     symbol: string,
     currency: string,
@@ -134,10 +165,10 @@ export declare type PhemexClosedTrade = {
     orderQty: number,
     priceEp: number,
     execValueEv: number,
-    feeRateEr: number,
-    execFeeEv: number,
+    feeRateEr: number,   
+    execFeeEv: number,     // without entry fee
     closedSize: number,
-    closedPnlEv: number,
+    closedPnlEv: number, // without fee
     ordType: orderType,
     execID: string,
     orderID: string,

@@ -4,7 +4,7 @@ import { ActiveTrade } from '../@types/Bot'
 import { formatPrice } from '../helper'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
-const URL: string = 'http://phemexhandler.azurewebsites.net'
+const URL: string = 'http://positionalgo.azurewebsites.net'
 
 // --> PositionAlgo
 export async function getPositionUpdate(token: string, trade: ActiveTrade, currentPrice: number): Promise<PositionAlgoResponse> {

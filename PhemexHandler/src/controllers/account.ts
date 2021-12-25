@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import { PhemexAccountInfo, PhemexAccountPosition, PhemexClosedTrade, PhemexOpenOrder, PhemexRequestOptions } from '../@types/phemexapi'
-import { OpenOrder, Position } from '../@types/phemexhandler'
-import { decryptOptions, handleResponse, logErrorCode } from '../helper/phemexapihelper'
+import { PhemexAccountInfo, PhemexAccountPosition, PhemexClosedTrade, PhemexOpenOrder, PhemexRequestOptions, PhemexUserTrade } from '../@types/phemexapi'
+import { ClosedTrade, OpenOrder, Position } from '../@types/phemexhandler'
+import { decryptOptions, evAmountToBTCAmount, handleResponse, logErrorCode, priceEpToPrice } from '../helper/phemexapihelper'
 import { PhemexClient } from '../phemexclient/phemex-api-client'
 import { logErr } from '../middleware/logger'
 
@@ -64,15 +64,15 @@ export function getActiveTrade(req: any, res: Response, next: NextFunction) {
     })
 }
 
-// TODO: not getting correct info -> this method is import to determine the pnl of the last trade
+// TODO: right now, just for checking if a limit order is filled
 export function getClosedTrades(req: any, res: Response, next: NextFunction) {
     const options = decryptOptions(req.token)
 
     queryPhemexClosedTrades(options)
     .then(trades => {
-        // const formattedTrades = getTrades(trades)
+        const formattedTrades: ClosedTrade[] = getTrades(trades)
 
-        req.toSend = {trades: trades}//formattedTrades
+        req.toSend = {trades: formattedTrades}
         next()
     })
     .catch((err) => {
@@ -88,7 +88,7 @@ export function getActiveOrders(req: any, res: Response, next: NextFunction) {
 
     queryPhemexOrders(options)
     .then(orders => {
-        console.log(orders)
+        // console.log(orders)
 
         req.toSend = {orders}
         next()
@@ -104,14 +104,14 @@ export function getActiveOrders(req: any, res: Response, next: NextFunction) {
 
 
 // TODO: not working / cant get pnl details
-function queryPhemexClosedTrades(options: any): Promise<PhemexClosedTrade[]> {
+function queryPhemexClosedTrades2(options: any): Promise<PhemexClosedTrade[]> {
     return new Promise<PhemexClosedTrade[]>((resolve, reject) => {
-        // PhemexClient.QueryRecentTrades({symbol: 'BTCUSD'}, options)
+
         PhemexClient.QueryClosedOrdersBySymbol({symbol: 'BTCUSD'}, options)
         .then((data: any) => {
             const trades = data.result.rows.filter((trade: any) => trade.ordStatus == 'Filled')
             
-            console.log('usertrades:')
+            console.log('closed trades:')
             console.log(trades)
             
             resolve(trades)
@@ -119,15 +119,42 @@ function queryPhemexClosedTrades(options: any): Promise<PhemexClosedTrade[]> {
         .catch(err => {
             reject(err)
         })
-
-        // PhemexClient.QueryUserTrades({symbol: 'BTCUSD'}, options)
+    })
+}
+function queryPhemexClosedTrades(options: any): Promise<PhemexUserTrade[]> {
+    return new Promise<PhemexUserTrade[]>((resolve, reject) => {
+        // PhemexClient.QueryRecentTrades({symbol: 'BTCUSD'}, options)
         // .then((data: any) => {
-        //     const trades: PhemexClosedTrade[] = <PhemexClosedTrade[]>data.rows
+        //     console.log('recent trades:')
+        //     console.log(data.result.trades[0])
+        //     console.log(data.result.trades[1])
+        // })
+        // .catch(err => {
+        //     // reject(err)
+        // })
+
+        // PhemexClient.QueryClosedOrdersBySymbol({symbol: 'BTCUSD'}, options)
+        // .then((data: any) => {
+        //     const trades = data.result.rows.filter((trade: any) => trade.ordStatus == 'Filled')
+            
+        //     console.log('usertrades:')
+        //     console.log(trades)
+            
         //     resolve(trades)
         // })
         // .catch(err => {
         //     reject(err)
         // })
+
+        // contain pnl details
+        PhemexClient.QueryUserTrades({symbol: 'BTCUSD'}, options)
+        .then((data: any) => {
+            const trades: PhemexUserTrade[] = <PhemexUserTrade[]>data.result.rows
+            resolve(trades)
+        })
+        .catch(err => {
+            reject(err)
+        })
     })
 }
 
@@ -280,16 +307,38 @@ function getOrders(data: PhemexOpenOrder[]): OpenOrder[] {
 
     return formattedOrders
 }
-function getTrades(data: PhemexClosedTrade[]): any {
-    const formattedTrades = data.map(trade => {
+function getTrades(data: PhemexUserTrade[]): ClosedTrade[] {
+    const formattedTrades: ClosedTrade[] = data.map(trade => {
         return {
+            transactTimeNs: trade.transactTimeNs,
             orderID: trade.orderID,
+            clOrdID: trade.clOrdID,
             side: trade.side,
             type: trade.ordType,
-            quantity: trade.closedSize,
-            status: trade.execStatus
+            quantity: trade.execQty,
+            closedPnl: evAmountToBTCAmount(trade.closedPnlEv),
+            execFee: evAmountToBTCAmount(trade.execFeeEv),
+            execPrice: priceEpToPrice(trade.execPriceEp)
         }
     })
 
     return formattedTrades
 }
+// function getTrades(data: PhemexClosedTrade[]): ClosedTrade[] {
+//     const formattedTrades: ClosedTrade[] = data.map(trade => {
+//         return {
+//             orderID: trade.orderID,
+//             clOrdID: trade.clOrdID,
+//             side: trade.side,
+//             type: trade.orderType,
+//             quantity: trade.cumQty,
+//             status: trade.ordStatus,
+//             closedSize: trade.closedSize,
+//             pnl: trade.closedPnlEv,         // TODO: DOESNT SOMEHOW TAKE FEES INTO CONSIDERATION AMK
+//             price: priceEpToPrice(trade.priceEp),
+//             stopLoss: priceEpToPrice(trade.stopLossEp)
+//         }
+//     })
+
+//     return formattedTrades
+// }

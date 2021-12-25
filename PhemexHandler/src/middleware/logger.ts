@@ -12,7 +12,7 @@ export function logTime(req: Request, res: Response, next: NextFunction) {
 
     logResponse(res, (resBody: Object) => {
         console.log(`responding with:`)
-        console.log(resBody)
+        // console.log(resBody)
 
         console.log(`---- REQUEST ${reqCount} END ----\n`)
     })

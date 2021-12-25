@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
 import { secretToken } from '../index'
 import axios from 'axios'
-import { MarketDataResponse } from '../@types/api/PhemexHandler'
+import { ClosedTradeResponse, MarketDataResponse, PlaceEntryResponse } from '../@types/api/PhemexHandler'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 
-const URL: string = 'http://phemexhandler.azurewebsites.net'
+const URL: string = 'http://localhost:8085'//'http://phemexhandler.azurewebsites.net'
 
 // --> MARKET DATA
 export async function getMarketData(): Promise<MarketDataResponse> {
@@ -84,7 +84,7 @@ export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
 
         axios.get(`${URL}/account/openorders`, getAxiosRequestConfig(token))
         .then(res => {
-            const openOrders: OpenOrder[] = res.data
+            const openOrders: OpenOrder[] = res.data.orders
             resolve(openOrders)
         })
         .catch(err => {
@@ -93,12 +93,13 @@ export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
 
     })
 }
-export async function getClosedTrades(token: string): Promise<any> {
+export async function getClosedTrades(token: string): Promise<ClosedTradeResponse[]> {
     return new Promise((resolve, reject) => {
 
         axios.get(`${URL}/account/closedtrades`, getAxiosRequestConfig(token))
         .then(res => {
-            resolve(res.data)
+            const closedTrades: ClosedTradeResponse[] = res.data.trades
+            resolve(closedTrades)
         })
         .catch(err => {
             reject(formatAxiosError(err))
@@ -117,7 +118,7 @@ declare type PlaceEntryRequest = {
     side: orderSide
 }
 
-export async function placeEntryOrder(token: string, price: number, stopLoss: number, side: orderSide, accountPercQty: number): Promise<any> {
+export async function placeEntryOrder(token: string, price: number, stopLoss: number, side: orderSide, accountPercQty: number): Promise<PlaceEntryResponse> {
     return new Promise((resolve, reject) => {
 
         const requestOptions: PlaceEntryRequest = {
@@ -130,7 +131,8 @@ export async function placeEntryOrder(token: string, price: number, stopLoss: nu
 
         axios.post(`${URL}/order/placeentry`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
-            resolve(res.data)
+            const placedentry: PlaceEntryResponse = <PlaceEntryResponse>res.data
+            resolve(placedentry)
         })
         .catch(err => {
             reject(formatAxiosError(err))

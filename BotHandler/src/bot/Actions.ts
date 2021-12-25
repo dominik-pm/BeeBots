@@ -1,6 +1,6 @@
 import { currentMarketData } from '..'
 import { ActiveTrade } from '../@types/Bot'
-import { getOpenPosition, orderSide, placeEntryOrder, placeStopLoss, placeTakeProfit } from '../api/PhemexHandler'
+import { orderSide, placeEntryOrder, placeStopLoss, placeTakeProfit } from '../api/PhemexHandler'
 import { formatPrice } from '../helper'
 import Bot from './Bot'
 
@@ -14,12 +14,16 @@ export function openPosition(bot: Bot, action: orderSide, stopDistancePercentage
         console.log(`opened trade at: ${currentMarketData.currentPrice}`)
         bot.openedPosition(currentMarketData.currentPrice, action == 'Buy' ? 'long' : 'short', stopLoss)
     } else {
-        // TODO: with limit order
-        const openPrice = currentMarketData.currentPrice
+        const percEntryDist: number = 0.001
+        const entryDistance: number = (action == 'Buy' ? 1 : - 1) * currentMarketData.currentPrice * percEntryDist
+        const openPrice = currentMarketData.currentPrice - entryDistance
         
         placeEntryOrder(bot.authToken, openPrice, stopLoss, action, bot.riskProfile.capitalRiskPerTrade)
-        .then(res => {
-            console.log('Trying to place an entry...')
+        .then(entry => {
+            console.log(entry.message)
+            const entryOrderID = entry.orderID
+            console.log(entryOrderID)
+            bot.phemexAccountInfo.activeLimitEntryOrderID = entryOrderID
         })
         .catch(err => {
             console.log(err)

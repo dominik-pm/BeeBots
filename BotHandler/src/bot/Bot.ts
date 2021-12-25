@@ -1,5 +1,5 @@
 import { getRProfit } from '../index'
-import { ActiveTrade, RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
+import { ActiveTrade, BotAccountInfo, RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
 import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
 import { getTradeCall } from '../api/BuyAlgo'
 import { getPositionUpdate } from '../api/PositionAlgo'
@@ -19,6 +19,12 @@ export default class Bot {
     tradeHistory: Transaction[]
     riskProfile: RiskProfile
     id: number
+    phemexAccountInfo: BotAccountInfo = {
+        activeLimitEntryOrderID: null,
+        entryOrderID: null,
+        balance: 0,
+        entryPnl: 0
+    }
 
     constructor(id: number, token: string, tradingPermission: TradingPermission, name: string, riskProfile = defaultRiskProfile, currentTrade: ActiveTrade | null = null) {
         this.id = id
@@ -43,6 +49,7 @@ export default class Bot {
                 }
             })
             .catch(err => {
+                console.log('Can not get tradecall:')
                 this.log(err)
             })
         } else {
@@ -70,6 +77,7 @@ export default class Bot {
                 }
             })
             .catch(err => {
+                console.log('Can not get positionupdate:')
                 this.log(err)
             })
         }

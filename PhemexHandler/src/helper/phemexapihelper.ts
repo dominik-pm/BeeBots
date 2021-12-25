@@ -14,6 +14,13 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+export function evAmountToBTCAmount(ev: number): number {
+    return Math.trunc(ev) / 100000000
+}
+export function btcAmountToEvAmount(btcAmount: number): number {
+    return Math.trunc(btcAmount * 100000000)
+}
+
 export function priceToPriceEp(price: number): number {
     return formatPrice(price) * 10000
 }
