@@ -7,6 +7,7 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 
+const URL: string = 'http://phemexhandler.azurewebsites.net'
 
 // --> MARKET DATA
 export async function getMarketData(): Promise<MarketDataResponse> {
@@ -15,7 +16,7 @@ export async function getMarketData(): Promise<MarketDataResponse> {
         const payload = {}
         const token = jwt.sign(payload, secretToken)
 
-        axios.get('http://phemexhandler.azurewebsites.net/marketdata', getAxiosRequestConfig(token))
+        axios.get(`${URL}/marketdata`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -36,7 +37,7 @@ declare type AccountInfoResponse = {
 export async function getAccountInfo(token: string): Promise<AccountInfoResponse> {
     return new Promise((resolve, reject) => {
 
-        axios.get('http://phemexhandler.azurewebsites.net/account', getAxiosRequestConfig(token))
+        axios.get(`${URL}/account`, getAxiosRequestConfig(token))
         .then(res => {
             const account: AccountInfoResponse = res.data
             resolve(account)
@@ -58,7 +59,7 @@ export declare type Position = {
 export async function getOpenPosition(token: string): Promise<Position | null> {
     return new Promise((resolve, reject) => {
 
-        axios.get('http://phemexhandler.azurewebsites.net/account/openposition', getAxiosRequestConfig(token))
+        axios.get(`${URL}/account/openposition`, getAxiosRequestConfig(token))
         .then(res => {
             const position: Position | null = res.data.position
             resolve(position)
@@ -81,7 +82,7 @@ export declare type OpenOrder = {
 export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
     return new Promise((resolve, reject) => {
 
-        axios.get('http://phemexhandler.azurewebsites.net/account/openorders', getAxiosRequestConfig(token))
+        axios.get(`${URL}/account/openorders`, getAxiosRequestConfig(token))
         .then(res => {
             const openOrders: OpenOrder[] = res.data
             resolve(openOrders)
@@ -95,7 +96,7 @@ export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
 export async function getClosedTrades(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.get('http://phemexhandler.azurewebsites.net/account/closedtrades', getAxiosRequestConfig(token))
+        axios.get(`${URL}/account/closedtrades`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -127,7 +128,7 @@ export async function placeEntryOrder(token: string, price: number, stopLoss: nu
             side
         }
 
-        axios.post('http://phemexhandler.azurewebsites.net/order/placeentry', requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${URL}/order/placeentry`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -152,7 +153,7 @@ export async function placeTakeProfit(token: string, takeProfit: number): Promis
             takeProfit
         }
 
-        axios.post('http://phemexhandler.azurewebsites.net/order/placetakeprofit', requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${URL}/order/placetakeprofit`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             const response: PlaceOrderResponse = res.data
             resolve(response)
@@ -173,7 +174,7 @@ export async function placeStopLoss(token: string, stopLoss: number): Promise<Pl
             stopLoss
         }
 
-        axios.post('http://phemexhandler.azurewebsites.net/order/placestoploss', requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${URL}/order/placestoploss`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             const response: PlaceOrderResponse = res.data
             resolve(response)
@@ -188,7 +189,7 @@ export async function cancelOrder(token: string, orderID: string): Promise<any> 
     return new Promise((resolve, reject) => {
 
 
-        axios.delete(`http://phemexhandler.azurewebsites.net/order/${orderID}`, getAxiosRequestConfig(token))
+        axios.delete(`${URL}/order/${orderID}`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -201,7 +202,7 @@ export async function cancelOrder(token: string, orderID: string): Promise<any> 
 export async function closeAll(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.delete(`http://phemexhandler.azurewebsites.net/order/closeall`, getAxiosRequestConfig(token))
+        axios.delete(`${URL}/order/closeall`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })

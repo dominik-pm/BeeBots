@@ -5,6 +5,10 @@ import { RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
 import Bot from '../bot/Bot'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
+
+const URL: string = `http://beebotsbackend.azurewebsites.net`
+
+
 // --> BACKEND
 export async function getActiveBots(): Promise<Bot[]> {
     return new Promise((resolve, reject) => {
@@ -46,7 +50,7 @@ export async function getActiveBots(): Promise<Bot[]> {
 export async function saveBotTransaction(botId: number, newTrade: Transaction, token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.get('http://beebotsbackend.azurewebsites.net/accountInfo', getAxiosRequestConfig(token, {
+        axios.get(`${URL}/accountInfo`, getAxiosRequestConfig(token, {
             botId, 
             trade: newTrade
         }))
