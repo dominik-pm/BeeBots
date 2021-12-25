@@ -3,6 +3,7 @@ import { ActiveTrade, RiskProfile, TradingPermission, Transaction } from '../@ty
 import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
 import { getTradeCall } from '../api/BuyAlgo'
 import { getPositionUpdate } from '../api/PositionAlgo'
+import * as _ from 'lodash'
 
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade
@@ -50,7 +51,7 @@ export default class Bot {
             this.log(
                 'current position:',
                 {entryPrice: this.currentTrade?.entryPrice, stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit},
-                'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss, currentPrice)
+                'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss || this.currentTrade.entryPrice, currentPrice)
             )
             
             getPositionUpdate(this.authToken, this.currentTrade, currentPrice)
@@ -88,6 +89,8 @@ export default class Bot {
     }
 
     updatedPosition(newPosition: ActiveTrade) {
+        if (_.isEqual(this.currentTrade, newPosition)) return
+
         this.currentTrade = newPosition
 
         this.log(

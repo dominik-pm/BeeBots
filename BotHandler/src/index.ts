@@ -3,7 +3,7 @@ import { MarketDataResponse } from './@types/api/PhemexHandler'
 import { ActiveTrade, ClosedTrade } from './@types/Bot'
 import Bot from './bot/Bot'
 import { getActiveBots, saveBotTransaction } from './api/Backend'
-import { closeAll, getMarketData } from './api/PhemexHandler'
+import { closeAll, getMarketData, getOpenPosition } from './api/PhemexHandler'
 import { connectToDatabase } from './database/mongoconnection'
 
 const DATA_INTERVAL = 10000
@@ -43,16 +43,6 @@ getActiveBots()
 })
 
 function validateBotAccounts(bots: Bot[]) {
-    // TODO:
-    bots.forEach(bot => {
-        closeAll(bot.authToken)
-        .then(res => {
-            console.log(res)
-        })
-        .catch(err => {
-            err
-        })
-    })
 
     // -> trading on phemex
     // 1. get account info
@@ -74,7 +64,8 @@ function validateBotAccounts(bots: Bot[]) {
 function manageBots(bots: Bot[]): void {
 
     getMarketData()
-    .then(currentMarketData => {
+    .then(data => {
+        currentMarketData = data
         const { currentPrice, marketData } = currentMarketData
 
         console.log(`Got market data!`)
@@ -96,6 +87,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
     if (bot.tradingPermission == 'simulated') {
         // 1. check if bot is in a trade
         if (!bot.currentTrade) return
+        if (!bot.currentTrade.stopLoss) throw('Simulated bot does not have a stop loss!')
 
         if (bot.currentTrade.side == 'long') {
             
@@ -129,8 +121,56 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
     } else {
         // TODO:
-        // 1. check if the trade is still open
-        // 2. if not -> get the trade result
+        getOpenPosition(bot.authToken)
+        .then(position => {
+            // 1. check if bot is in a trade
+            if (bot.currentTrade) {
+                
+                // position is still open -> update values
+                if (position) {
+                    // send the bot the actual position (doesnt have to differ)
+                    bot.currentTrade.stopLoss = position.stopLoss || bot.currentTrade.stopLoss
+                    const newPosition: ActiveTrade = {
+                        ...bot.currentTrade,
+                        takeProfit: position.takeProfit,
+                        stopLoss: position.stopLoss || bot.currentTrade.stopLoss
+                    }
+                    bot.updatedPosition(newPosition)
+                }
+
+                // position is closed -> get profit and close the bots position
+                else {
+                    // bot.closedPosition()
+                }
+            } 
+            // 2. The bot is not in a trade
+            else {
+
+                // there is an open position -> check if it is valid and set the bots current trade
+                if (position) {
+                    console.log('Got position active on phemex!', position)
+                    
+                    if (position.stopLoss) {
+                        // new opened position is valid
+                        bot.openedPosition(position.entryPrice, position.side == 'Buy' ? 'long' : 'short', position.stopLoss, position.takeProfit)
+                    } else {
+                        console.log('New position does not have a Stop Loss!')
+                        // closeAll(bot.authToken)
+                        // .then(res => {
+                        //     console.log('Closed position!')
+                        // })
+                        // .catch(err => {
+                        //     console.log('Error when trying to close the position!')
+                        //     console.log(err)
+                        // })
+                    }
+                }
+            }
+        })
+        .catch(err => {
+            console.log('Error trying to get the open position for bot ' + bot.name)
+            console.log(err)
+        })
     }
 }
 

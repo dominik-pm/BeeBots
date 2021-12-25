@@ -60,7 +60,7 @@ export async function getOpenPosition(token: string): Promise<Position | null> {
 
         axios.get('http://phemexhandler.azurewebsites.net/account/openposition', getAxiosRequestConfig(token))
         .then(res => {
-            const position: Position | null = res.data
+            const position: Position | null = res.data.position
             resolve(position)
         })
         .catch(err => {

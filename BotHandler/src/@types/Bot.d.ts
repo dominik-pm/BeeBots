@@ -6,7 +6,7 @@ export interface ActiveTrade {
     side: 'long' | 'short'
     entryPrice: number
     originalStopLoss: number
-    stopLoss: number
+    stopLoss: number | null
     takeProfit: number | null
     exitPrice: number | null
 }

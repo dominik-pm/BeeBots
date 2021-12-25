@@ -3,8 +3,8 @@ declare module 'positionalgo'
 export interface PositionAlgoRequest {
     currentPrice: number,
     entryPrice: number,
-    stopLoss: number,
     originalStopLoss: number,
+    stopLoss: number | null,
     takeProfit: number | null
 }
 
