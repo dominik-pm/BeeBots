@@ -151,13 +151,14 @@ function checkPosition(bot: Bot, currentPrice: number) {
                             console.log('Bot position got removed before being able to calculate the details')
                             return
                         }
-                        const entryFill = trades.find(trade => trade.orderID == bot.phemexAccountInfo.entryOrderID)
+                        console.log(bot.phemexAccountInfo.entryOrderID)
+                        const entryFill = trades.find(trade => trade.orderID == bot.phemexAccountInfo.entryOrderID) // TODO: cant find it
                         if (!entryFill) {
                             console.log('could not get entry fill order!')
                             return
                         }
 
-                        const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity) // TODO: find on orderID
+                        const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity)
                         
                         console.log('closed fills:', closedFills)
 
@@ -165,7 +166,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         let avgExit = 0
                         closedFills.forEach(trade => {
                             exitPnl += trade.closedPnl - trade.execFee
-                            avgExit += trade.execPrice // TODO: price
+                            avgExit += trade.execPrice
                         })
                         avgExit /= closedFills.length
 
@@ -208,7 +209,49 @@ function checkPosition(bot: Bot, currentPrice: number) {
                     
                     if (position.stopLoss) {
                         // new opened position is valid
-                        bot.openedPosition(position.entryPrice, position.side == 'Buy' ? 'long' : 'short', position.stopLoss, position.takeProfit)
+
+                        // check if it is filled
+                        getClosedTrades(bot.authToken)
+                        .then(trades => {
+                            if (!position.stopLoss) {
+                                console.log('Postion stop loss got removed!')
+                                closeAll(bot.authToken)
+                                .then(res => {
+                                    console.log('Closed all trades!')
+                                    console.log(res)
+                                })
+                                .catch(err => {
+                                    console.log('Cant close all trades')
+                                    console.log(err)
+                                })
+                                return
+                            }
+
+                            const filledTrade = trades.find(t => t.orderID == bot.phemexAccountInfo.activeLimitEntryOrderID)
+                            if (filledTrade) {
+                                // limit is filled
+                                bot.phemexAccountInfo.entryOrderID = filledTrade.orderID
+                                bot.phemexAccountInfo.activeLimitEntryOrderID = null
+                                console.log(bot.name + ' filled entry at: ' + filledTrade.execPrice)
+                                console.log('filled order: ' + filledTrade.orderID)
+                            } else {
+                                // order has not just been filled -> maybe bothandler restarted and position was open
+                                const activeFill = trades.find(t => t.side == position.side && t.quantity == position.quantity)
+                                if (!activeFill) {
+                                    console.log('Cant get active previously filled position!')
+                                    return
+                                }
+                                bot.phemexAccountInfo.entryOrderID = activeFill.orderID
+                                bot.phemexAccountInfo.activeLimitEntryOrderID = null
+                                console.log('previously filled order: ' + activeFill.orderID)
+                            }
+                            bot.openedPosition(position.entryPrice, position.side == 'Buy' ? 'long' : 'short', position.stopLoss, position.takeProfit)
+                        })
+                        .catch(err => {
+                            console.log('Cant get closed trades:')
+                            console.log(err)
+                        })
+
                     } else {
                         console.log('New position does not have a Stop Loss!')
                         closeAll(bot.authToken)
@@ -224,24 +267,6 @@ function checkPosition(bot: Bot, currentPrice: number) {
                     if (bot.phemexAccountInfo.activeLimitEntryOrderID) {
                         // bot is waiting for an entry to fill
                         console.log(bot.name + ' wating for entry')
-                        
-                        // check if it is filled
-                        getClosedTrades(bot.authToken)
-                        .then(trades => {
-                            const filledTrade = trades.find(t => t.orderID == bot.phemexAccountInfo.activeLimitEntryOrderID)
-                            if (filledTrade) {
-                                // limit is filled
-                                bot.phemexAccountInfo.entryOrderID = bot.phemexAccountInfo.activeLimitEntryOrderID
-                                bot.phemexAccountInfo.activeLimitEntryOrderID = null
-                                console.log(bot.name + ' filled entry at: ' + filledTrade.execPrice)
-
-                                // bot.open position happens next time when scanning for current position on phemex
-                            }
-                        })
-                        .catch(err => {
-                            console.log('Cant get closed trades:')
-                            console.log(err)
-                        })
                     }
                 }
             }
