@@ -30,7 +30,7 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
     const orderID = entryReq.orderID || generateRandomID()
     const stopLoss = entryReq.stopLoss
     const quantity = 500//entryReq.quantity // TODO: should be a percentage of account -> also check leverage,...
-    const side: orderSide = 'Buy'
+    const side: orderSide = entryReq.side
 
     getPositionAndOrders(options)
     .then(result => {
@@ -45,19 +45,21 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
         postCancelMultipleOrders(orders, options)
         .then(success => {
 
-            // TODO: MAKE THIS LIMIT ORDER
             PhemexClient.PlaceOrder({
                 symbol: 'BTCUSD',
                 clOrdID: orderID,
                 side,
                 orderQty: quantity,
-                ordType: 'Market',
+                ordType: 'Limit',
+                timeInForce: 'GoodTillCancel', // TODO: maybe post only - but requires further error handling (if its cancel the order still says it is created)
                 priceEp: priceToPriceEp(price),
                 slTrigger: 'ByMarkPrice',
                 stopLossEp: priceToPriceEp(stopLoss),
             }, options)
             .then(res => {
                 console.log(res.result)
+                const createdOrder: PhemexOrderCreatedResponse = <PhemexOrderCreatedResponse>res.result
+                req.toSend = {message: 'Successfully placed order!', orderID: createdOrder.orderID}
         
                 next()
             })
