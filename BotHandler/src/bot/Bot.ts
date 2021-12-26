@@ -4,6 +4,7 @@ import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
 import { getTradeCall } from '../api/BuyAlgo'
 import { getPositionUpdate } from '../api/PositionAlgo'
 import * as _ from 'lodash'
+import { MarketDataResponse } from '../@types/api/PhemexHandler'
 
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade
@@ -36,12 +37,12 @@ export default class Bot {
         this.riskProfile = riskProfile
     }
 
-    decideAction(data: any) {
-        const { currentPrice, marketData } = data
+    decideAction(marketData: MarketDataResponse) {
+        const { currentPrice } = marketData
 
         if (!this.currentTrade) {
             // looking for a trade
-            getTradeCall(this.authToken, data)
+            getTradeCall(this.authToken, marketData)
             .then(res => {
                 this.log(res)
                 if (res.confidence > this.riskProfile.tradeThreshhold) {
@@ -107,7 +108,7 @@ export default class Bot {
         )
     }
 
-    closedPosition(profit: number, exitPrice: number): Transaction | null {
+    closedPosition(percentageProfit: number, rProfit: number, exitPrice: number): Transaction | null {
         if (!this.currentTrade) {
             return null
         }
@@ -117,7 +118,8 @@ export default class Bot {
         let newTrade: Transaction = {
             entryPrice: this.currentTrade.entryPrice,
             exitPrice: this.currentTrade.exitPrice,
-            profit
+            percentageProfit,
+            rProfit
         }
 
         // add the new trade to the history

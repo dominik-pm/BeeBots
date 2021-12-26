@@ -191,10 +191,18 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
                         const netProfit = evAmountToBTCAmount(Math.round(btcAmountToEvAmount(exitPnl - exitFee + bot.phemexAccountInfo.entryPnl)))
                         
+                        const percProfit = netProfit / bot.phemexAccountInfo.balance
+
+                        const risk = bot.phemexAccountInfo.balance * bot.riskProfile.capitalRiskPerTrade
+                        const rProfit = netProfit / risk
+
+                        console.log(`risk: ${risk}`)
                         console.log('pnl: ' + netProfit)
+                        console.log(`percentage gain: ${Math.round(percProfit*10000)/100}`)
+                        console.log(`r-profit: ${rProfit}`)
 
                         // TODO: copy paste code
-                        const newTrade = bot.closedPosition(netProfit / bot.phemexAccountInfo.balance, avgExit)
+                        const newTrade = bot.closedPosition(percProfit, rProfit, avgExit)
 
                         console.log(`${bot.name} trade history: `)
                         console.log(bot.tradeHistory)
@@ -349,8 +357,9 @@ export function getRProfit(entryPrice: number, stopLoss: number, exitPrice: numb
 function botClosePosition(bot: Bot, closedTrade: ClosedTrade) {
 
     const rProfit = getRProfit(closedTrade.entryPrice, closedTrade.originalStopLoss, closedTrade.exitPrice)
+    const percProfit = bot.riskProfile.capitalRiskPerTrade * rProfit
 
-    const newTrade = bot.closedPosition(rProfit/**bot.riskProfile.capitalRiskPerTrade*/, closedTrade.exitPrice)
+    const newTrade = bot.closedPosition(percProfit, rProfit, closedTrade.exitPrice)
 
     console.log(`${bot.name} trade history: `)
     console.log(bot.tradeHistory)

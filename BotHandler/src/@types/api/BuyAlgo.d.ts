@@ -1,12 +1,19 @@
 declare module 'buyAlgo'
 
 export interface BuyAlgoRequest {
-    currentPrice: number,
-    marketData: {
-        longInterest: number,
-        dailyHigh: number,
-        dailyLow: number
-    }
+    symbol: string
+    indexPrice: number
+    markPrice: number
+    close: number
+    high: number
+    low: number
+    open: number
+    fundingRate: number
+    predFundingRate: number
+    openInterest: number
+    turnover: number
+    volume: number
+    timestamp: number
 }
 
 export interface BuyAlgoResponse {

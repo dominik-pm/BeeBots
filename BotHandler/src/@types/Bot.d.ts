@@ -4,9 +4,9 @@ export declare type TradingPermission = 'live' | 'testnet' | 'simulated'
 export declare type Action = 'long' | 'short'
 
 export interface BotAccountInfo {
-    activeLimitEntryOrderID: string | null = null,
-    balance: number,
-    entryOrderID: string | null,
+    activeLimitEntryOrderID: string | null = null
+    balance: number
+    entryOrderID: string | null
     entryPnl: number
 }
 
@@ -30,7 +30,8 @@ export interface ClosedTrade {
 export interface Transaction {
     entryPrice: number
     exitPrice: number
-    profit: number
+    percentageProfit: number
+    rProfit: number
 }
 export interface RiskProfile {
     tradeThreshhold: number         // percentage
