@@ -14,6 +14,7 @@ export interface BuyAlgoRequest {
     turnover: number
     volume: number
     timestamp: number
+    currentPrice: number
 }
 
 export interface BuyAlgoResponse {
