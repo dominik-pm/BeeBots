@@ -67,7 +67,7 @@ function manageBots(bots: Bot[]): void {
     getMarketData()
     .then(data => {
         currentMarketData = data
-        const { currentPrice, marketData } = currentMarketData
+        const { currentPrice } = currentMarketData
 
         console.log(`Got market data!`)
         console.log(`Current Price: ${currentPrice}`)

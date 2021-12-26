@@ -9,6 +9,37 @@ export declare type PhemexRequestOptions = {
     secret: string
 }
 
+export declare type PhemexMarketData = {
+    close: number,
+    fundingRate: number,
+    high: number,
+    indexPrice: number,
+    low: number,
+    markPrice: number,
+    open: number,
+    openInterest: 0,
+    predFundingRate: number,
+    symbol: string,
+    timestamp: number,
+    turnover: number,
+    volume: number
+}
+// export declare type MarketData = {
+//     close: 499180000,
+//     fundingRate: 10000,
+//     high: 511625000,
+//     indexPrice: 499301405,
+//     low: 497005000,
+//     markPrice: 499303273,
+//     open: 508695000,
+//     openInterest: 0,
+//     predFundingRate: 10000,
+//     symbol: "BTCUSD",
+//     timestamp: 1640504522794840800,
+//     turnover: 16795485860778,
+//     volume: 8490905048
+//     currentPrice: 49914.5
+// }
 export declare type PhemexAccountInfo = {
     account: {
         userID: number,
