@@ -10,19 +10,19 @@ export declare type PhemexRequestOptions = {
 }
 
 export declare type PhemexMarketData = {
-    close: number,
-    fundingRate: number,
-    high: number,
-    indexPrice: number,
-    low: number,
-    markPrice: number,
-    open: number,
-    openInterest: 0,
-    predFundingRate: number,
     symbol: string,
-    timestamp: number,
+    indexPrice: number,
+    markPrice: number,
+    close: number,
+    high: number,
+    low: number,
+    open: number,
+    fundingRate: number,
+    predFundingRate: number,
+    openInterest: 0,
     turnover: number,
     volume: number
+    timestamp: number,
 }
 // export declare type MarketData = {
 //     close: 499180000,
