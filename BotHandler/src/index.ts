@@ -130,11 +130,11 @@ function checkPosition(bot: Bot, currentPrice: number) {
                 // position is still open -> update values
                 if (position) {
                     // send the bot the actual position (doesnt have to differ)
-                    bot.currentTrade.stopLoss = position.stopLoss || bot.currentTrade.stopLoss
+                    bot.currentTrade.stopLoss = position.stopLoss
                     const newPosition: ActiveTrade = {
                         ...bot.currentTrade,
                         takeProfit: position.takeProfit,
-                        stopLoss: position.stopLoss || bot.currentTrade.stopLoss
+                        stopLoss: position.stopLoss
                     }
                     bot.updatedPosition(newPosition)
                 }

@@ -5,6 +5,7 @@ import { getTradeCall } from '../api/BuyAlgo'
 import { getPositionUpdate } from '../api/PositionAlgo'
 import * as _ from 'lodash'
 import { MarketDataResponse } from '../@types/api/PhemexHandler'
+import { closeAll } from '../api/PhemexHandler'
 
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade
@@ -58,7 +59,7 @@ export default class Bot {
             
             this.log(
                 'current position:',
-                {entryPrice: this.currentTrade?.entryPrice, stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit},
+                {entryPrice: this.currentTrade.entryPrice, stopLoss: this.currentTrade.stopLoss, takeProfit: this.currentTrade.takeProfit},
                 'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss || this.currentTrade.entryPrice, currentPrice)
             )
             
@@ -80,6 +81,14 @@ export default class Bot {
             .catch(err => {
                 console.log('Can not get positionupdate:')
                 this.log(err)
+                console.log('---> closing position')
+                closeAll(this.authToken)
+                .then(res => {
+                    console.log('closed all')
+                })
+                .catch(err => {
+                    console.log(err)
+                })
             })
         }
 

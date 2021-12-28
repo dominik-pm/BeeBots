@@ -14,7 +14,7 @@ const RDistance = 3;
 const algDataSchema = Joi.object({
     currentPrice: Joi.number().greater(0).required(),
     entryPrice: Joi.number().greater(0).required(),
-    stopLoss: Joi.number().greater(0).required(),
+    stopLoss: [Joi.number().greater(0), Joi.allow(null)],
     originalStopLoss: Joi.number().greater(0).required(),
     takeProfit: [Joi.number().greater(0), Joi.allow(null)]
 })
@@ -23,7 +23,7 @@ function getNewPosition(data) {
     const { currentPrice, entryPrice, stopLoss, originalStopLoss, takeProfit } = data;
 
     let newTakeProfit = takeProfit;
-    let newStopLoss = stopLoss;
+    let newStopLoss = stopLoss ? stopLoss : originalStopLoss;
     let stopDistance = entryPrice-originalStopLoss;
     
     // always set TP at 3R
