@@ -48,6 +48,7 @@ export declare type ClosedTrade = {
     side: orderSide,
     type: orderType,
     quantity: number,
+    execQty: number,
     closedPnl: number,
     execFee: number,
     execPrice: number

@@ -181,9 +181,9 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         closedFills.forEach(trade => {
                             exitPnl += trade.closedPnl
                             exitFee += trade.execFee
-                            avgExit += trade.execPrice
+                            avgExit += (trade.execPrice * trade.execQty)
                         })
-                        avgExit /= closedFills.length
+                        avgExit /= entryFill.quantity
 
                         console.log('exit pnl: ' + exitPnl)
                         console.log('exit fee: ' + exitFee)

@@ -327,7 +327,8 @@ function getTrades(data: PhemexUserTrade[]): ClosedTrade[] {
             clOrdID: trade.clOrdID,
             side: trade.side,
             type: trade.ordType,
-            quantity: trade.execQty,
+            quantity: trade.orderQty,
+            execQty: trade.execQty,
             closedPnl: evAmountToBTCAmount(trade.closedPnlEv),
             execFee: evAmountToBTCAmount(trade.execFeeEv),
             execPrice: priceEpToPrice(trade.execPriceEp)
