@@ -79,15 +79,17 @@ export default class Bot {
                 }
             })
             .catch(err => {
-                console.log('Can not get positionupdate:')
-                this.log(err)
-                console.log('---> closing position')
+                this.log(
+                    'Can not get positionupdate:',
+                    err,
+                    '---> closing position'
+                )
                 closeAll(this.authToken)
                 .then(res => {
-                    console.log('closed all')
+                    this.log('closed all')
                 })
                 .catch(err => {
-                    console.log(err)
+                    this.log(err)
                 })
             })
         }

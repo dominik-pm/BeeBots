@@ -13,7 +13,7 @@ export async function connectToDatabase(connectionString: string) {
     btcHistory = db.collection('BitcoinHistory');
  
     console.log(`Successfully connected to database: ${db.databaseName} and collection: ${btcHistory.collectionName}`);
-    console.log(btcHistory.find())
+    // console.log(btcHistory.find())
 }
 
 export async function saveCurrentPrice(price: number) {

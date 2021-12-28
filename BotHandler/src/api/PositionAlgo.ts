@@ -4,7 +4,7 @@ import { ActiveTrade } from '../@types/Bot'
 import { formatPrice } from '../helper'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
-const URL: string = 'http://positionalgo.azurewebsites.net'
+export const POSITIONALGO_URL: string = 'http://positionalgo.azurewebsites.net' // 'http://localhost:8080'
 
 // --> PositionAlgo
 export async function getPositionUpdate(token: string, trade: ActiveTrade, currentPrice: number): Promise<PositionAlgoResponse> {
@@ -18,7 +18,7 @@ export async function getPositionUpdate(token: string, trade: ActiveTrade, curre
             currentPrice
         }
 
-        axios.get(`${URL}/positionupdate`, getAxiosRequestConfig(token, data))
+        axios.get(`${POSITIONALGO_URL}/positionupdate`, getAxiosRequestConfig(token, data))
         .then(res => {
             let pos = <PositionAlgoResponse>res.data
 

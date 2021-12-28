@@ -6,6 +6,7 @@ import { getActiveBots, saveBotTransaction } from './api/Backend'
 import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
 import { connectToDatabase } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
+import { checkForBrokenServiceConnections } from './api/Api'
 
 const DATA_INTERVAL = 10000
 export let currentMarketData: MarketDataResponse
@@ -29,23 +30,30 @@ if (!connectionString) {
     connectToDatabase(connectionString)
 }
 
+startBotHandler()
 
-console.log('fetching active bots...')
-getActiveBots()
-.then(bots => {
-    console.log(`Got ${bots.length} bots!`)
+async function startBotHandler() {
+    await checkForBrokenServiceConnections()
 
-    validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
+    console.log('fetching active bots...')
+    getActiveBots()
+    .then(bots => {
+        console.log(`Got ${bots.length} bots!`)
+    
+        validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
+    
+        // manageBots(bots)
+        setInterval(() => {
+           manageBots(bots)
+        }, DATA_INTERVAL)
+    })
+    .catch(err => {
+        console.log('Cant get active bots:')
+        console.log(err)
+    })
+}
 
-    // manageBots(bots)
-    setInterval(() => {
-       manageBots(bots)
-    }, DATA_INTERVAL)
-})
-.catch(err => {
-    console.log('Cant get active bots:')
-    console.log(err)
-})
+
 
 function validateBotAccounts(bots: Bot[]) {
 
