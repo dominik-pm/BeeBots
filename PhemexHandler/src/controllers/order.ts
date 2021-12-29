@@ -78,9 +78,9 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
                         side,
                         orderQty: quantity,
                         ordType: 'Limit',
-                        timeInForce: 'GoodTillCancel', // TODO: maybe post only - but requires further error handling (if its cancel the order still says it is created)
+                        timeInForce: 'PostOnly', // TODO: maybe post only - but requires further error handling (if its cancel the order still says it is created)
                         priceEp: priceToPriceEp(entryPrice),
-                        slTrigger: 'ByMarkPrice',
+                        slTrigger: 'ByLastPrice',
                         stopLossEp: priceToPriceEp(stopLoss),
                     }, options)
                     .then(res => {
