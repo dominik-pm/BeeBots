@@ -50,8 +50,8 @@ export async function getActiveBots(): Promise<Bot[]> {
 export async function saveBotTransaction(botId: number, newTrade: Transaction, token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${BACKEND_URL}/accountInfo`, getAxiosRequestConfig(token, {
-            botId, 
+        axios.post(`${BACKEND_URL}/trade`, getAxiosRequestConfig(token, {
+            botId,
             trade: newTrade
         }))
         .then(res => {

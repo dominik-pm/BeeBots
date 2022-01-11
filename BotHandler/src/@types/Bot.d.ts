@@ -30,8 +30,12 @@ export interface ClosedTrade {
 export interface Transaction {
     entryPrice: number
     exitPrice: number
+    stopLoss: number | null
+    target: number | null
     percentageProfit: number
-    rProfit: number
+    profit: number
+    exitTime: String
+    action: Action
 }
 export interface RiskProfile {
     tradeThreshhold: number         // percentage

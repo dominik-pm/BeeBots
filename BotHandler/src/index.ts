@@ -4,7 +4,7 @@ import { ActiveTrade, ClosedTrade } from './@types/Bot'
 import Bot from './bot/Bot'
 import { getActiveBots, saveBotTransaction } from './api/Backend'
 import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
-import { connectToDatabase } from './database/mongoconnection'
+import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
 import { checkForBrokenServiceConnections } from './api/Api'
 
@@ -79,6 +79,8 @@ function manageBots(bots: Bot[]): void {
 
         console.log(`Got market data!`)
         console.log(`Current Price: ${currentPrice}`)
+
+        saveCurrentPrice(currentPrice)
 
         bots.forEach(bot => {
             checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
@@ -176,7 +178,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         console.log(trades[0])
                         const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity)
                         
-                        console.log('closed fills:', closedFills)
+                        console.log('closed fills:', closedFills.filter((v, i) => i < 5))
 
                         if (closedFills.length == 0) {
                             console.log('could not get closed fill orders!')
@@ -325,6 +327,7 @@ function setBotBalance(bot: Bot) {
         bot.phemexAccountInfo.balance = data.btcBalance
     })
     .catch(err => {
+        console.log(`Could not get account info for bot: ${bot.name}!`)
         console.log(err)
     })
 }
