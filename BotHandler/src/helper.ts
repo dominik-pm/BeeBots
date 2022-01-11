@@ -13,6 +13,13 @@ export const formatPrice = (originalPrice: number): number => {
     return price
 }
 
+export function evAmountToBTCAmount(ev: number): number {
+    return Math.trunc(ev) / 100000000
+}
+export function btcAmountToEvAmount(btcAmount: number): number {
+    return Math.trunc(btcAmount * 100000000)
+}
+
 export const convertSideToAction = (side: orderSide): Action => {
     return side == 'Buy' ? 'short' : 'short'
 }

@@ -14,7 +14,7 @@ export function openPosition(bot: Bot, action: orderSide, stopDistancePercentage
         console.log(`opened trade at: ${currentMarketData.currentPrice}`)
         bot.openedPosition(currentMarketData.currentPrice, action == 'Buy' ? 'long' : 'short', stopLoss)
     } else {
-        const percEntryDist: number = 0.001
+        const percEntryDist: number = 0.0005
         const entryDistance: number = (action == 'Buy' ? 1 : - 1) * currentMarketData.currentPrice * percEntryDist
         const openPrice = currentMarketData.currentPrice - entryDistance
         

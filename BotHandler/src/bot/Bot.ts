@@ -4,6 +4,8 @@ import { openPosition, updateStopLoss, updateTakeProfit } from './Actions'
 import { getTradeCall } from '../api/BuyAlgo'
 import { getPositionUpdate } from '../api/PositionAlgo'
 import * as _ from 'lodash'
+import { MarketDataResponse } from '../@types/api/PhemexHandler'
+import { closeAll } from '../api/PhemexHandler'
 
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade
@@ -15,7 +17,7 @@ export default class Bot {
     authToken: string
     name: string
     tradingPermission: TradingPermission
-    currentTrade: ActiveTrade | null
+    currentTrade: ActiveTrade | null // TODO: maybe add risk amount to position (can vary when trading on phemex) -> to calculate R-profit
     tradeHistory: Transaction[]
     riskProfile: RiskProfile
     id: number
@@ -36,12 +38,12 @@ export default class Bot {
         this.riskProfile = riskProfile
     }
 
-    decideAction(data: any) {
-        const { currentPrice, marketData } = data
+    decideAction(marketData: MarketDataResponse) {
+        const { currentPrice } = marketData
 
         if (!this.currentTrade) {
             // looking for a trade
-            getTradeCall(this.authToken, data)
+            getTradeCall(this.authToken, marketData)
             .then(res => {
                 this.log(res)
                 if (res.confidence > this.riskProfile.tradeThreshhold) {
@@ -57,7 +59,7 @@ export default class Bot {
             
             this.log(
                 'current position:',
-                {entryPrice: this.currentTrade?.entryPrice, stopLoss: this.currentTrade?.stopLoss, takeProfit: this.currentTrade?.takeProfit},
+                {entryPrice: this.currentTrade.entryPrice, stopLoss: this.currentTrade.stopLoss, takeProfit: this.currentTrade.takeProfit},
                 'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss || this.currentTrade.entryPrice, currentPrice)
             )
             
@@ -77,8 +79,18 @@ export default class Bot {
                 }
             })
             .catch(err => {
-                console.log('Can not get positionupdate:')
-                this.log(err)
+                this.log(
+                    'Can not get positionupdate:',
+                    err,
+                    '---> closing position'
+                )
+                closeAll(this.authToken)
+                .then(res => {
+                    this.log('closed all')
+                })
+                .catch(err => {
+                    this.log(err)
+                })
             })
         }
 
@@ -107,7 +119,7 @@ export default class Bot {
         )
     }
 
-    closedPosition(profit: number, exitPrice: number): Transaction | null {
+    closedPosition(percentageProfit: number, rProfit: number, exitPrice: number): Transaction | null {
         if (!this.currentTrade) {
             return null
         }
@@ -117,7 +129,8 @@ export default class Bot {
         let newTrade: Transaction = {
             entryPrice: this.currentTrade.entryPrice,
             exitPrice: this.currentTrade.exitPrice,
-            profit
+            percentageProfit,
+            rProfit
         }
 
         // add the new trade to the history

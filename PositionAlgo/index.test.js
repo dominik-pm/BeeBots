@@ -409,8 +409,7 @@ describe('Algo specific response 3RBE1', () => {
             .send({
                 currentPrice: 45500,
                 entryPrice: 45000,
-                originalStopLoss: 46000,
-                stopLoss: 46000
+                originalStopLoss: 46000
             })
             .expect('Content-Type', /json/)
             .expect(200)
@@ -430,7 +429,7 @@ describe('Algo specific response 3RBE1', () => {
                 currentPrice: 46000,
                 entryPrice: 45000,
                 originalStopLoss: 44000,
-                stopLoss: 44000
+                stopLoss: null
             })
             .expect('Content-Type', /json/)
             .expect(200)

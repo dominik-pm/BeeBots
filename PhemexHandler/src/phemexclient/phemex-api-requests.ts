@@ -87,6 +87,11 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
         httpOptions.body = params;
     }
 
+    if (method === 'PUT') {
+        console.log('PUTTING')
+        console.log(httpOptions)
+    }
+
     return new Promise((resolve, reject) => {
         request(httpOptions, function callback(err: any, res: any, body: any) {
             /* body:
@@ -96,7 +101,6 @@ async function makeRequest(method: Method, endpoint: string, params: any, option
                     "data": <data>
                 }
             */
-            // console.log(res.body)
             
             if (!res.body.result && res.body.code != 0 && !res.body.error) {
                 reject({msg: res.body.msg, code: res.body.code});

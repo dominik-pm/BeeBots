@@ -36,7 +36,20 @@ describe('Buy Algo trade call', () => {
             .get('/tradecall')
             .set(headers)
             .send({
-
+                close: 50001.5,
+                fundingRate: 0.0001,
+                high: 51162.5,
+                indexPrice: 49974.5,
+                low: 49700.5,
+                markPrice: 49979.5,
+                open: 50914.5,
+                openInterest: 0,
+                predFundingRate: 0.0001,
+                symbol: "BTCUSD",
+                timestamp: 1640508031074115600,
+                turnover: 170192.7340135,
+                volume: 8597963449,
+                currentPrice: 50000
             })
             .expect('Content-Type', /json/)
             .expect(200)

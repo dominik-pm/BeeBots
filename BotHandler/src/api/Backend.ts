@@ -6,7 +6,7 @@ import Bot from '../bot/Bot'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
 
-const URL: string = `http://beebotsbackend.azurewebsites.net`
+export const BACKEND_URL: string = `http://beebotsbackend.azurewebsites.net`
 
 
 // --> BACKEND
@@ -28,8 +28,8 @@ export async function getActiveBots(): Promise<Bot[]> {
             const permission: TradingPermission = payload.isLivenet ? 'live' : 'testnet'
             const risk: RiskProfile = {
                 capitalRiskPerTrade: 0.001,
-                stopLossDistance: 0.002,
-                tradeThreshhold: 0.5
+                stopLossDistance: 0.001,
+                tradeThreshhold: 0.75
             } 
             let bot1: Bot = new Bot(1, authToken, permission, 'Kevin', risk)
             bots.push(bot1)
@@ -50,7 +50,7 @@ export async function getActiveBots(): Promise<Bot[]> {
 export async function saveBotTransaction(botId: number, newTrade: Transaction, token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${URL}/accountInfo`, getAxiosRequestConfig(token, {
+        axios.get(`${BACKEND_URL}/accountInfo`, getAxiosRequestConfig(token, {
             botId, 
             trade: newTrade
         }))

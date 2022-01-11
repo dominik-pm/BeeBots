@@ -1,9 +1,9 @@
 import { NextFunction, Response } from 'express'
 import { PhemexOrderCreatedResponse, PhemexRequestOptions } from '../@types/phemexapi'
 import { OpenOrder, orderSide, Position } from '../@types/phemexhandler'
-import { decryptOptions, logErrorCode, priceToPriceEp } from '../helper/phemexapihelper'
+import { convertToEr, decryptOptions, logErrorCode, priceToPriceEp } from '../helper/phemexapihelper'
 import { PhemexClient } from '../phemexclient/phemex-api-client'
-import { queryCurrentPosition, queryPhemexOrders } from './account'
+import { getAccountInfo, queryAccountInfo, queryCurrentPosition, queryPhemexOrders } from './account'
 
 declare type PlaceEntryRequest = {
     price: number,
@@ -26,59 +26,124 @@ export function placeEntry(req: any, res: Response, next: NextFunction) {
 
     const entryReq: PlaceEntryRequest = <PlaceEntryRequest>req.body
 
-    const price = entryReq.price
+    const entryPrice = entryReq.price
     const orderID = entryReq.orderID || generateRandomID()
     const stopLoss = entryReq.stopLoss
-    const quantity = 500//entryReq.quantity // TODO: should be a percentage of account -> also check leverage,...
+    const quantityPerc = entryReq.quantity
     const side: orderSide = entryReq.side
 
     getPositionAndOrders(options)
     .then(result => {
         const { orders, position } = result
-
+        
         if (position) {
             next({status: 400, message: 'Can not place entry when there is an open position!'})
             return
         }
 
-        // cancel all orders
-        postCancelMultipleOrders(orders, options)
-        .then(success => {
+        queryAccountInfo(options)
+        .then(account => {
 
-            PhemexClient.PlaceOrder({
-                symbol: 'BTCUSD',
-                clOrdID: orderID,
-                side,
-                orderQty: quantity,
-                ordType: 'Limit',
-                timeInForce: 'GoodTillCancel', // TODO: maybe post only - but requires further error handling (if its cancel the order still says it is created)
-                priceEp: priceToPriceEp(price),
-                slTrigger: 'ByMarkPrice',
-                stopLossEp: priceToPriceEp(stopLoss),
-            }, options)
-            .then(res => {
-                console.log(res.result)
-                const createdOrder: PhemexOrderCreatedResponse = <PhemexOrderCreatedResponse>res.result
-                req.toSend = {message: 'Successfully placed order!', orderID: createdOrder.orderID}
-        
-                next()
-            })
-            .catch(err => {
-                console.log('phemex responded with error:', err)
-                let msg = logErrorCode(err)
-                next({status: 400, message: msg})
-            })
+            if (!account) {
+                next({message: 'Can not get account info!'})
+                return
+            }
+
+            const stopDist = entryPrice - stopLoss
+            const quantity = Math.floor(Math.abs(((quantityPerc*account.btcBalance*entryPrice)/stopDist)*stopLoss))
+
+            const leverage: null | number = getLeverage(quantity, account.btcBalance, entryPrice)
+
+            if (!leverage) {
+                next({status: 400, message: `Invalid order size: ${quantity}; Cannot set leverage!`})
+                return
+            }
+
+            console.log('TODO: change leverage to:', leverage)
+            console.log(`Trying to open a position with a ${quantity} contract size!`)
+
+            // postSetLeverage(leverage, options)
+            // .then(lvgSuccess => {
+            //     console.log('Successfully changed leverage to', leverage)
+            //     console.log(lvgSuccess)
 
 
+                // cancel all orders
+                postCancelMultipleOrders(orders, options)
+                .then(success => {
+
+                    PhemexClient.PlaceOrder({
+                        symbol: 'BTCUSD',
+                        clOrdID: orderID,
+                        side,
+                        orderQty: quantity,
+                        ordType: 'Limit',
+                        timeInForce: 'GoodTillCancel', // TODO: maybe post only - but requires further error handling (if its cancel the order still says it is created)
+                        priceEp: priceToPriceEp(entryPrice),
+                        slTrigger: 'ByMarkPrice',
+                        stopLossEp: priceToPriceEp(stopLoss),
+                    }, options)
+                    .then(res => {
+                        console.log(res.result)
+                        const createdOrder: PhemexOrderCreatedResponse = <PhemexOrderCreatedResponse>res.result
+                        req.toSend = {message: 'Successfully placed order!', orderID: createdOrder.orderID}
+                
+                        next()
+                    })
+                    .catch(err => {
+                        console.log('phemex responded with error:', err)
+                        let msg = logErrorCode(err)
+                        next({status: 400, message: msg})
+                    })
+
+
+                })
+                .catch(err => {
+                    console.log(err)
+                    next({message: 'Could not cancel orders!'})
+                })
+
+
+
+            // })
+            // .catch(err => {
+            //     console.log('Could not change leverage!')
+            //     console.log(err)
+            //     next({message: 'Could not change leverage!'})
+            // })
         })
         .catch(err => {
-
+            console.log('Can not get account info!')
+            console.log(err)
+            next({message: 'Can not get account info!'})
         })
+        
     })
     .catch(err => {
         console.log('can not get position and orders')
         next({message: 'Can not get position and orders!'})
     })
+}
+// returns minimum amount of leverage required (if it is not possible -> null)
+function getLeverage(quantity: number, btcBalance: number, price: number):  null | number {
+    const margin = 0.1  // some leftover margin (cant get exact numbers)
+    const availableContract1X = btcBalance*price
+
+    // check if user has enough balance available
+    if (quantity > availableContract1X*100*(1-margin)) return null
+
+    // get best leverage
+    let optimalLeverage = quantity / (availableContract1X*(1-margin))
+
+    // check leverage
+    if (optimalLeverage < 1) return 1.00
+    if (optimalLeverage > 100) return null
+    
+    // round leverage to 2 decimals
+    optimalLeverage = Math.round(optimalLeverage*100) / 100
+
+    console.log(`Found optimal leverage for ${quantity} contracts and a balance of ${btcBalance}: ${optimalLeverage}`)
+    return optimalLeverage
 }
 
 // TODO: refactor :(
@@ -320,6 +385,14 @@ function getPositionAndOrders(options: PhemexRequestOptions): Promise<PositionAn
     })
 }
 
+function postSetLeverage(leverage: number, options: PhemexRequestOptions): Promise<any> {
+    const leverageEr: number = convertToEr(leverage)
+    return PhemexClient.ChangeLeverage({
+        symbol: 'BTCUSD',
+        leverage: leverage,
+        leverageEr: convertToEr(leverage)
+    }, options)
+}
 function postMarketOrder(side: orderSide, quantity: number, options: PhemexRequestOptions): Promise<any> {
     return PhemexClient.PlaceOrder({
         symbol: 'BTCUSD',

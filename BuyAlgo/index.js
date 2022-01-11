@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
     res.status(200).send({message: 'working'})
 })
 
-app.get('/tradecall', tradeCall, authenticate, (req, res) => {
+app.get('/tradecall', authenticate, tradeCall, (req, res) => {
     const {action, confidence} = req.body.tradeCall
 
     if (!action || !confidence) {

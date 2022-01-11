@@ -7,7 +7,7 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 
-const URL: string = 'http://phemexhandler.azurewebsites.net'//'http://localhost:8085'//
+export const PHEMEXHANDLER_URL: string = 'http://phemexhandler.azurewebsites.net' // 'http://localhost:8085'
 
 // --> MARKET DATA
 export async function getMarketData(): Promise<MarketDataResponse> {
@@ -16,7 +16,7 @@ export async function getMarketData(): Promise<MarketDataResponse> {
         const payload = {}
         const token = jwt.sign(payload, secretToken)
 
-        axios.get(`${URL}/marketdata`, getAxiosRequestConfig(token))
+        axios.get(`${PHEMEXHANDLER_URL}/marketdata`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -37,7 +37,7 @@ declare type AccountInfoResponse = {
 export async function getAccountInfo(token: string): Promise<AccountInfoResponse> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${URL}/account`, getAxiosRequestConfig(token))
+        axios.get(`${PHEMEXHANDLER_URL}/account`, getAxiosRequestConfig(token))
         .then(res => {
             const account: AccountInfoResponse = res.data
             resolve(account)
@@ -59,7 +59,7 @@ export declare type Position = {
 export async function getOpenPosition(token: string): Promise<Position | null> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${URL}/account/openposition`, getAxiosRequestConfig(token))
+        axios.get(`${PHEMEXHANDLER_URL}/account/openposition`, getAxiosRequestConfig(token))
         .then(res => {
             const position: Position | null = res.data.position
             resolve(position)
@@ -82,7 +82,7 @@ export declare type OpenOrder = {
 export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${URL}/account/openorders`, getAxiosRequestConfig(token))
+        axios.get(`${PHEMEXHANDLER_URL}/account/openorders`, getAxiosRequestConfig(token))
         .then(res => {
             const openOrders: OpenOrder[] = res.data.orders
             resolve(openOrders)
@@ -96,7 +96,7 @@ export async function getOpenOrders(token: string): Promise<OpenOrder[]> {
 export async function getClosedTrades(token: string): Promise<ClosedTradeResponse[]> {
     return new Promise((resolve, reject) => {
 
-        axios.get(`${URL}/account/closedtrades`, getAxiosRequestConfig(token))
+        axios.get(`${PHEMEXHANDLER_URL}/account/closedtrades`, getAxiosRequestConfig(token))
         .then(res => {
             const closedTrades: ClosedTradeResponse[] = res.data.trades
             resolve(closedTrades)
@@ -129,7 +129,7 @@ export async function placeEntryOrder(token: string, price: number, stopLoss: nu
             side
         }
 
-        axios.post(`${URL}/order/placeentry`, requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${PHEMEXHANDLER_URL}/order/placeentry`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             const placedentry: PlaceEntryResponse = <PlaceEntryResponse>res.data
             resolve(placedentry)
@@ -155,7 +155,7 @@ export async function placeTakeProfit(token: string, takeProfit: number): Promis
             takeProfit
         }
 
-        axios.post(`${URL}/order/placetakeprofit`, requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${PHEMEXHANDLER_URL}/order/placetakeprofit`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             const response: PlaceOrderResponse = res.data
             resolve(response)
@@ -176,7 +176,7 @@ export async function placeStopLoss(token: string, stopLoss: number): Promise<Pl
             stopLoss
         }
 
-        axios.post(`${URL}/order/placestoploss`, requestOptions, getAxiosRequestConfig(token))
+        axios.post(`${PHEMEXHANDLER_URL}/order/placestoploss`, requestOptions, getAxiosRequestConfig(token))
         .then(res => {
             const response: PlaceOrderResponse = res.data
             resolve(response)
@@ -191,7 +191,7 @@ export async function cancelOrder(token: string, orderID: string): Promise<any> 
     return new Promise((resolve, reject) => {
 
 
-        axios.delete(`${URL}/order/${orderID}`, getAxiosRequestConfig(token))
+        axios.delete(`${PHEMEXHANDLER_URL}/order/${orderID}`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })
@@ -204,7 +204,7 @@ export async function cancelOrder(token: string, orderID: string): Promise<any> 
 export async function closeAll(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-        axios.delete(`${URL}/order/closeall`, getAxiosRequestConfig(token))
+        axios.delete(`${PHEMEXHANDLER_URL}/order/closeall`, getAxiosRequestConfig(token))
         .then(res => {
             resolve(res.data)
         })

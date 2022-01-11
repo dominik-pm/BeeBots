@@ -14,6 +14,12 @@ interface EncryptedApiKeys {
     apiSecretKey: string
 }
 
+export function convertToEr(num: number): number {
+    return num * 100000000
+}
+export function convertFromEr(erNum: number): number {
+    return erNum / 100000000
+}
 export function evAmountToBTCAmount(ev: number): number {
     return Math.trunc(ev) / 100000000
 }

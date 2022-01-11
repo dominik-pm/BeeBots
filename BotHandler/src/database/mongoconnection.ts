@@ -1,15 +1,22 @@
 import * as mongoDB from 'mongodb'
 
+let db: mongoDB.Db | null
+let btcHistory: mongoDB.Collection | null = null
 
 export async function connectToDatabase(connectionString: string) {
     const client: mongoDB.MongoClient = new mongoDB.MongoClient(connectionString);
             
     await client.connect();
     
-    const db: mongoDB.Db = client.db('MarketHistory');
+    db = client.db('MarketHistory');
    
-    const btcHistory: mongoDB.Collection = db.collection('BitcoinHistory');
+    btcHistory = db.collection('BitcoinHistory');
  
     console.log(`Successfully connected to database: ${db.databaseName} and collection: ${btcHistory.collectionName}`);
-    // console.log(btcHistory)
+    // console.log(btcHistory.find())
+}
+
+export async function saveCurrentPrice(price: number) {
+    if (!db || !btcHistory) return
+
 }
