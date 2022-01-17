@@ -251,6 +251,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         .then(trades => {
                             if (!position.stopLoss) {
                                 console.log('Postion stop loss got removed!')
+                                // TODO: set stoploss
                                 closeAll(bot.authToken)
                                 .then(res => {
                                     console.log('Closed all trades!')
@@ -292,6 +293,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
                     } else {
                         console.log('New position does not have a Stop Loss!')
+                        // TODO: set stoploss
                         closeAll(bot.authToken)
                         .then(res => {
                             console.log('Closed position!')

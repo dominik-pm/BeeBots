@@ -1,7 +1,7 @@
 // npm install tardis-dev
 const tardis = require('tardis-dev')
 const { streamNormalized, normalizeTrades, normalizeBookChanges } = tardis
-const { replay } = tardis;
+// const { replay } = tardis
 
 export let livePrice: number = 0
 
@@ -22,7 +22,7 @@ async function getRealTimeData() {
     for await (const message of messages) {
         
         if (message.type == 'trade') {
-            livePrice = message.price;
+            livePrice = message.price
         }
 
     }

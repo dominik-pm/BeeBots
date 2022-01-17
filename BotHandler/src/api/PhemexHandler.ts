@@ -7,7 +7,7 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 
-export const PHEMEXHANDLER_URL: string = 'http://phemexhandler.azurewebsites.net' // 'http://localhost:8085'
+export const PHEMEXHANDLER_URL: string = 'http://localhost:8085' // 'http://phemexhandler.azurewebsites.net' // 
 
 // --> MARKET DATA
 export async function getMarketData(): Promise<MarketDataResponse> {
@@ -124,7 +124,7 @@ export async function placeEntryOrder(token: string, price: number, stopLoss: nu
         const requestOptions: PlaceEntryRequest = {
             price,
             quantity: accountPercQty,
-            orderID: '123564789645',
+            // orderID: '123',
             stopLoss,
             side
         }

@@ -29,7 +29,7 @@ export async function getActiveBots(): Promise<Bot[]> {
             const risk: RiskProfile = {
                 capitalRiskPerTrade: 0.001,
                 stopLossDistance: 0.001,
-                tradeThreshhold: 0.75
+                tradeThreshhold: 0.5
             } 
             let bot1: Bot = new Bot(1, authToken, permission, 'Kevin', risk)
             bots.push(bot1)
