@@ -32,14 +32,14 @@ export async function getActiveBots(): Promise<Bot[]> {
                 tradeThreshhold: 0.5
             } 
             let bot1: Bot = new Bot(1, authToken, permission, 'Kevin', risk)
-            bots.push(bot1)
+            // bots.push(bot1)
 
             bot1.authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpdiI6IjI5YzdiNjYyZWIxZjhjZDExYTIzY2Y1NzI4ZDg3OTczIiwiZW5jcnlwdGVkRGF0YSI6IjNlMjE0MDUyMjIyYzVhMzE3NDFjN2FmZjAwZjA5YzM2NjA5Y2ZkYjNhYjhkMmZlMWI0YTQwMzhjNTdmNzgzZDZlYTZiNWRlZGFlNzY1YzZmMjZkODc0MWU2OTY3ZTdjYzM0ZDM0MmM1ZThmN2I4OWVkOTMzNjczNmMwNTIwOWZlY2U3MGFmOTY4NjBhNTBlMjczMGI0NzA3YzE3NGVkZjA5ODIyM2M4MGI5NDRmOGIwYjM5NDQ1MzUwMTFmZjYwYzVmMjRjZDE3ZTEzZDBlZGIzODBhMDc4NTRiYzQ3NWY3NGRjZTc3OGQxMjAxNTYwNWZmMDY5MDc5MTBlODA0YTE0NjY3NDU1NzA5YzAzYjNkNTY2NmYxMWM0MmZiMjFmMzJkODcwOGY3NjgwMDlmMGQ2MDAzODM5MWE0OWVkNWFhIiwiaXNMaXZlbmV0IjpmYWxzZSwiaWF0IjoxNjMzODY4MTY3fQ.vhLoQDbsRZGOtXB1ZA3C7gn5kQGSdEtLfwBdFkuRSto'
 
 
-            // const authToken2 = jwt.sign('nix', secretToken)
-            // let bot2: Bot = new Bot(2, authToken2, 'simulated', 'Bertl')
-            // bots.push(bot2)
+            const authToken2 = jwt.sign('nix', secretToken)
+            let bot2: Bot = new Bot(2, authToken2, 'simulated', 'Bertl')
+            bots.push(bot2)
 
 
             resolve(bots)

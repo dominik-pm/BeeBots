@@ -7,7 +7,7 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 export declare type orderSide = 'Buy' | 'Sell'
 export declare type orderType = 'Limit' | 'Market' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'MarketAsLimit' | 'StopAsLimit' | 'MarketIfTouchedAsLimit'
 
-export const PHEMEXHANDLER_URL: string = 'http://localhost:8085' // 'http://phemexhandler.azurewebsites.net' // 
+export const PHEMEXHANDLER_URL: string = 'http://phemexhandler.azurewebsites.net' // 'http://localhost:8085'
 
 // --> MARKET DATA
 export async function getMarketData(): Promise<MarketDataResponse> {

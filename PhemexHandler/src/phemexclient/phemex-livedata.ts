@@ -17,7 +17,7 @@ async function getRealTimeData() {
         },
         normalizeTrades,
         normalizeBookChanges
-    );
+    )
 
     for await (const message of messages) {
         
