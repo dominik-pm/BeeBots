@@ -6,12 +6,24 @@ import Bot from '../bot/Bot'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
 
-export const BACKEND_URL: string = `http://beebotsbackend.azurewebsites.net`
+export const BACKEND_URL: string = `http://beebotsbackend.azurewebsites.net/api`
 
 
 // --> BACKEND
 export async function getActiveBots(): Promise<Bot[]> {
     return new Promise((resolve, reject) => {
+
+        const token = jwt.sign('nix', secretToken)
+
+        axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token))
+        .then(res => {
+            console.log('backend bot result:')
+            console.log(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
         let bots: Bot[] = []
 
         setTimeout(() => { // simulate api request

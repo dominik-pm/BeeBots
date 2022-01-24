@@ -22,7 +22,6 @@ if (!secret) {
 }
 export const secretToken: string = secret
 
-
 const connectionString = process.env.MONGO_CONNECTION
 if (!connectionString) {
     console.log('Could not load connection string!')
