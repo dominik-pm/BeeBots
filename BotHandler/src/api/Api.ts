@@ -37,7 +37,7 @@ export function formatAxiosError(err: AxiosError) {
     }
 }
 
-export function getAxiosRequestConfig(token: string, data: any = null, customHeader: any = {}): AxiosRequestConfig {
+export function getAxiosRequestConfig(token: string, data: any = null, customHeader: any = null): AxiosRequestConfig {
     const bearerAuth = {
         'Authorization': `Bearer ${token}`
     }

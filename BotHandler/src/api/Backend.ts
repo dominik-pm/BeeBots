@@ -8,14 +8,13 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 
 export const BACKEND_URL: string = `http://beebotsbackend.azurewebsites.net/api`
 
-
 // --> BACKEND
 export async function getActiveBots(): Promise<Bot[]> {
     return new Promise((resolve, reject) => {
 
         const token = jwt.sign('nix', secretToken)
 
-        axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token, null, {'code': backendAuthToken}))
+        axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token, null, {'x-functions-key': backendAuthToken}))
         .then(res => {
             console.log('backend bot result:')
             console.log(res.data)
@@ -65,7 +64,7 @@ export async function saveBotTransaction(botId: number, newTrade: Transaction, t
         axios.post(`${BACKEND_URL}/trade`, getAxiosRequestConfig(token, {
             botId,
             trade: newTrade
-        }, {'code': backendAuthToken}))
+        }, {'x-functions-key': backendAuthToken}))
         .then(res => {
             resolve(res.data)
         })
