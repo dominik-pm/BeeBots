@@ -129,8 +129,12 @@ export default class Bot {
         let newTrade: Transaction = {
             entryPrice: this.currentTrade.entryPrice,
             exitPrice: this.currentTrade.exitPrice,
+            stopLoss: this.currentTrade.stopLoss,
+            target: this.currentTrade.takeProfit,
+            action: this.currentTrade.side,
             percentageProfit,
-            rProfit
+            profit: rProfit,
+            exitTime: new Date().toISOString()
         }
 
         // add the new trade to the history

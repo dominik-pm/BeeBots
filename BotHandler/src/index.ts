@@ -4,7 +4,7 @@ import { ActiveTrade, ClosedTrade } from './@types/Bot'
 import Bot from './bot/Bot'
 import { getActiveBots, saveBotTransaction } from './api/Backend'
 import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
-import { connectToDatabase } from './database/mongoconnection'
+import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
 import { checkForBrokenServiceConnections } from './api/Api'
 
@@ -22,7 +22,6 @@ if (!secret) {
 }
 export const secretToken: string = secret
 
-
 const connectionString = process.env.MONGO_CONNECTION
 if (!connectionString) {
     console.log('Could not load connection string!')
@@ -33,7 +32,7 @@ if (!connectionString) {
 startBotHandler()
 
 async function startBotHandler() {
-    await checkForBrokenServiceConnections()
+    //await checkForBrokenServiceConnections()
 
     console.log('fetching active bots...')
     getActiveBots()
@@ -44,7 +43,19 @@ async function startBotHandler() {
     
         // manageBots(bots)
         setInterval(() => {
-           manageBots(bots)
+            getMarketData()
+            .then(data => {
+                currentMarketData = data
+                saveCurrentPrice(currentMarketData.currentPrice)
+
+                // manageBots(bots)
+
+            })
+            .catch(err => {
+                console.log('Cant get market data:')
+                console.log(err)
+            })
+
         }, DATA_INTERVAL)
     })
     .catch(err => {
@@ -72,24 +83,17 @@ function validateBotAccounts(bots: Bot[]) {
 
 function manageBots(bots: Bot[]): void {
 
-    getMarketData()
-    .then(data => {
-        currentMarketData = data
-        const { currentPrice } = currentMarketData
+    const { currentPrice } = currentMarketData
 
-        console.log(`Got market data!`)
-        console.log(`Current Price: ${currentPrice}`)
+    console.log(`Got market data!`)
+    console.log(`Current Price: ${currentPrice}`)
 
-        bots.forEach(bot => {
-            checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
+    saveCurrentPrice(currentPrice)
 
-            bot.decideAction(currentMarketData)
-        })
+    bots.forEach(bot => {
+        checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
 
-    })
-    .catch(err => {
-        console.log('Cant get market data:')
-        console.log(err)
+        bot.decideAction(currentMarketData)
     })
 
 }
@@ -176,7 +180,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         console.log(trades[0])
                         const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity)
                         
-                        console.log('closed fills:', closedFills)
+                        console.log('closed fills:', closedFills.filter((v, i) => i < 5))
 
                         if (closedFills.length == 0) {
                             console.log('could not get closed fill orders!')
@@ -327,6 +331,7 @@ function setBotBalance(bot: Bot) {
         bot.phemexAccountInfo.balance = data.btcBalance
     })
     .catch(err => {
+        console.log(`Could not get account info for bot: ${bot.name}!`)
         console.log(err)
     })
 }
