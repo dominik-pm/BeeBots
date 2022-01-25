@@ -1,6 +1,6 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
-import { secretToken } from '..'
+import { backendAuthToken, secretToken } from '..'
 import { RiskProfile, TradingPermission, Transaction } from '../@types/Bot'
 import Bot from '../bot/Bot'
 import { formatAxiosError, getAxiosRequestConfig } from './Api'
@@ -15,7 +15,7 @@ export async function getActiveBots(): Promise<Bot[]> {
 
         const token = jwt.sign('nix', secretToken)
 
-        axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token))
+        axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token, null, {'code': backendAuthToken}))
         .then(res => {
             console.log('backend bot result:')
             console.log(res.data)
@@ -65,7 +65,7 @@ export async function saveBotTransaction(botId: number, newTrade: Transaction, t
         axios.post(`${BACKEND_URL}/trade`, getAxiosRequestConfig(token, {
             botId,
             trade: newTrade
-        }))
+        }, {'code': backendAuthToken}))
         .then(res => {
             resolve(res.data)
         })

@@ -22,6 +22,12 @@ if (!secret) {
 }
 export const secretToken: string = secret
 
+const backendToken = process.env.BACKEND_TOKEN
+if (!backendToken) {
+    throw('Could not load backend token!')
+}
+export const backendAuthToken: string = backendToken
+
 const connectionString = process.env.MONGO_CONNECTION
 if (!connectionString) {
     console.log('Could not load connection string!')
