@@ -6,7 +6,7 @@ import { getActiveBots, saveBotTransaction } from './api/Backend'
 import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
 import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
-import { checkForBrokenServiceConnections } from './api/Api'
+// import { checkForBrokenServiceConnections } from './api/Api'
 
 const DATA_INTERVAL = 10000
 export let currentMarketData: MarketDataResponse
