@@ -32,7 +32,7 @@ if (!connectionString) {
 startBotHandler()
 
 async function startBotHandler() {
-    await checkForBrokenServiceConnections()
+    //await checkForBrokenServiceConnections()
 
     console.log('fetching active bots...')
     getActiveBots()
@@ -43,7 +43,19 @@ async function startBotHandler() {
     
         // manageBots(bots)
         setInterval(() => {
-           manageBots(bots)
+            getMarketData()
+            .then(data => {
+                currentMarketData = data
+                saveCurrentPrice(currentMarketData.currentPrice)
+
+                // manageBots(bots)
+
+            })
+            .catch(err => {
+                console.log('Cant get market data:')
+                console.log(err)
+            })
+
         }, DATA_INTERVAL)
     })
     .catch(err => {
@@ -71,26 +83,17 @@ function validateBotAccounts(bots: Bot[]) {
 
 function manageBots(bots: Bot[]): void {
 
-    getMarketData()
-    .then(data => {
-        currentMarketData = data
-        const { currentPrice } = currentMarketData
+    const { currentPrice } = currentMarketData
 
-        console.log(`Got market data!`)
-        console.log(`Current Price: ${currentPrice}`)
+    console.log(`Got market data!`)
+    console.log(`Current Price: ${currentPrice}`)
 
-        saveCurrentPrice(currentPrice)
+    saveCurrentPrice(currentPrice)
 
-        bots.forEach(bot => {
-            checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
+    bots.forEach(bot => {
+        checkPosition(bot, currentPrice) // TODO: call this with every network price stream input
 
-            bot.decideAction(currentMarketData)
-        })
-
-    })
-    .catch(err => {
-        console.log('Cant get market data:')
-        console.log(err)
+        bot.decideAction(currentMarketData)
     })
 
 }
