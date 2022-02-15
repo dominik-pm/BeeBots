@@ -104,13 +104,13 @@ export async function getActiveBots(): Promise<Bot[]> {
 export async function saveBotTransaction(botId: number, newTrade: Transaction, token: string): Promise<any> {
     return new Promise((resolve, reject) => {
         // const config: AxiosRequestConfig = getAxiosRequestConfig(token, {
-            //     botId,
-            //     trade: newTrade
-            // }, {'x-functions-key': backendAuthToken})
-            const req: any = {
-                botId,
-                trade: newTrade
-            }
+        //     botId,
+        //     trade: newTrade
+        // }, {'x-functions-key': backendAuthToken})
+        const req: any = {
+            botId,
+            trade: newTrade
+        }
         console.log(`posting new trade to backend for bot ${botId}: `, req)
 
         axios.post(`${BACKEND_URL}/trade`, req, {headers: {'x-functions-key': backendAuthToken}})
