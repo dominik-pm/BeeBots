@@ -31,7 +31,11 @@ export function checkServiceWorking(url: string): Promise<any> {
 
 export function formatAxiosError(err: AxiosError) {
     if (err.response) {
+        console.log('Response Http Status: ', err.response.status)
+        console.log('Response Headers: ', err.response.headers);
         return err.response.data
+    } else if (err.request) {
+        return err.request
     } else {
         return err.message
     }
@@ -42,9 +46,14 @@ export function getAxiosRequestConfig(token: string, data: any = null, customHea
         'Authorization': `Bearer ${token}`
     }
 
-    const headers = customHeader ? customHeader : bearerAuth
-    return {
-        headers,
-        data
+    let headers = bearerAuth
+    if (customHeader != null) {
+        headers = customHeader
     }
+
+    const config: AxiosRequestConfig = {
+        headers: headers,
+        data: data
+    }
+    return config
 }

@@ -47,14 +47,13 @@ async function startBotHandler() {
     
         validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
     
-        // manageBots(bots)
         setInterval(() => {
             getMarketData()
             .then(data => {
                 currentMarketData = data
                 saveCurrentPrice(currentMarketData.currentPrice)
 
-                // manageBots(bots)
+                manageBots(bots)
 
             })
             .catch(err => {
