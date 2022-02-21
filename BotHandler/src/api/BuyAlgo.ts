@@ -5,15 +5,17 @@ import { formatAxiosError, getAxiosRequestConfig } from './Api'
 export const BUYALGO_URL: string = 'http://buyalgo.azurewebsites.net'
 
 // --> BuyAlgo
-export async function getTradeCall(token: string, data: BuyAlgoRequest): Promise<BuyAlgoResponse> {
+export async function getTradeCall(token: string, data: BuyAlgoRequest, buyAlgo: number): Promise<BuyAlgoResponse> {
     return new Promise((resolve, reject) => {
 
+        console.log('buyalgo req')
+        axios.defaults.headers.common['Algo'] = buyAlgo.toString()
         axios.get(`${BUYALGO_URL}/tradecall`, getAxiosRequestConfig(token, data))
         .then(res => {
             resolve(res.data)
         })
         .catch(err => {
-            reject(formatAxiosError(err))
+            reject(err)
         })
 
     })

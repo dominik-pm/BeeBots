@@ -8,28 +8,28 @@
 */
 
 const Joi = require('joi')
-const RDistance = 3;
+const RDistance = 3
 
 const algDataSchema = Joi.object({
     entryPrice: Joi.number().greater(0).required(),
     originalStopLoss: Joi.number().greater(0).required()
 })
 
-function updatePosition(data) {
-    const { entryPrice, originalStopLoss } = data;
+function getNewPosition(data) {
+    const { entryPrice, originalStopLoss } = data
     
-    let stopDistance = entryPrice-originalStopLoss;
+    let stopDistance = entryPrice-originalStopLoss
     
     // always set TP at 3R
-    let newTakeProfit = entryPrice + (RDistance*stopDistance);
+    let newTakeProfit = entryPrice + (RDistance*stopDistance)
 
     let newPosition = {
         newStopLoss: originalStopLoss, newTakeProfit
     }
 
-    return newPosition;
+    return newPosition
 }
 
 module.exports = {
-    updatePosition, algDataSchema
-};
+    getNewPosition, algDataSchema
+}

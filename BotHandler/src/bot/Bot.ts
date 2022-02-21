@@ -21,6 +21,8 @@ export default class Bot {
     tradeHistory: Transaction[]
     riskProfile: RiskProfile
     id: number
+    buyAlgo: number
+    positionAlgo: number
     phemexAccountInfo: BotAccountInfo = {
         activeLimitEntryOrderID: null,
         entryOrderID: null,
@@ -28,11 +30,13 @@ export default class Bot {
         entryPnl: 0
     }
 
-    constructor(id: number, token: string, tradingPermission: TradingPermission, name: string, riskProfile = defaultRiskProfile, currentTrade: ActiveTrade | null = null) {
+    constructor(id: number, token: string, tradingPermission: TradingPermission, name: string, buyAlgo: number, positionAlgo: number, riskProfile = defaultRiskProfile, currentTrade: ActiveTrade | null = null) {
         this.id = id
         this.authToken = token
         this.tradingPermission = tradingPermission
         this.name = name
+        this.buyAlgo = buyAlgo
+        this.positionAlgo = positionAlgo
         this.currentTrade = currentTrade
         this.tradeHistory = []
         this.riskProfile = riskProfile
@@ -43,7 +47,7 @@ export default class Bot {
 
         if (!this.currentTrade) {
             // looking for a trade
-            getTradeCall(this.authToken, marketData)
+            getTradeCall(this.authToken, marketData, this.buyAlgo)
             .then(res => {
                 this.log(res)
                 if (res.confidence > this.riskProfile.tradeThreshhold) {
@@ -63,7 +67,7 @@ export default class Bot {
                 'current r profit:', getRProfit(this.currentTrade.entryPrice, this.currentTrade.originalStopLoss || this.currentTrade.entryPrice, currentPrice)
             )
             
-            getPositionUpdate(this.authToken, this.currentTrade, currentPrice)
+            getPositionUpdate(this.authToken, this.currentTrade, currentPrice, this.positionAlgo)
             .then(res => {
                 if (!this.currentTrade) {
                     return // position is closed, while the api request got fulfilled

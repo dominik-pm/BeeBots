@@ -9,7 +9,7 @@
 */
 
 const Joi = require('joi')
-const RDistance = 2;
+const RDistance = 2
 
 const algDataSchema = Joi.object({
     currentPrice: Joi.number().greater(0).required(),
@@ -19,26 +19,26 @@ const algDataSchema = Joi.object({
     takeProfit: [Joi.number().greater(0), Joi.allow(null)]
 })
 
-function updatePosition(data) {
-    const { currentPrice, entryPrice, stopLoss, originalStopLoss, takeProfit } = data;
+function getNewPosition(data) {
+    const { currentPrice, entryPrice, stopLoss, originalStopLoss, takeProfit } = data
 
-    let newTakeProfit = takeProfit;
-    let newStopLoss = stopLoss ? stopLoss : originalStopLoss;
-    let stopDistance = entryPrice-originalStopLoss;
+    let newTakeProfit = takeProfit
+    let newStopLoss = stopLoss ? stopLoss : originalStopLoss
+    let stopDistance = entryPrice-originalStopLoss
     
     // always set TP at 2R
-    newTakeProfit = entryPrice + (RDistance*stopDistance);
+    newTakeProfit = entryPrice + (RDistance*stopDistance)
 
     // set SL to BE, if price is at 1R
     if (originalStopLoss <= entryPrice) {
         // -> long
         if (currentPrice >= entryPrice + stopDistance) {
-            newStopLoss = entryPrice;
+            newStopLoss = entryPrice
         }
     } else {
         // -> short
         if (currentPrice <= entryPrice + stopDistance) {
-            newStopLoss = entryPrice;
+            newStopLoss = entryPrice
         }
     }
 
@@ -46,9 +46,9 @@ function updatePosition(data) {
         newStopLoss, newTakeProfit
     }
 
-    return newPosition;
+    return newPosition
 }
 
 module.exports = {
-    updatePosition, algDataSchema
-};
+    getNewPosition, algDataSchema
+}

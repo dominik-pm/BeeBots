@@ -37,7 +37,7 @@ export async function getActiveBots(): Promise<Bot[]> {
                     stopLossDistance: 0.001,
                     tradeThreshhold: 0.75
                 } 
-                let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, risk)
+                let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, b.buyAlgo, b.positionAlgo, risk)
                 bots.push(newBot)
 
                 const testTrade: Transaction = {
