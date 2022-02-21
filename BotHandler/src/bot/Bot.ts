@@ -105,6 +105,7 @@ export default class Bot {
             entryPrice: entry,
             exitPrice: null,
             isFilled: true,
+            entryTime: new Date(),
             side,
             stopLoss,
             originalStopLoss: stopLoss,
@@ -136,6 +137,7 @@ export default class Bot {
             stopLoss: this.currentTrade.stopLoss,
             target: this.currentTrade.takeProfit,
             action: this.currentTrade.side,
+            entryTime: this.currentTrade.entryTime.toISOString(),
             percentageProfit,
             profit: rProfit,
             exitTime: new Date().toISOString()

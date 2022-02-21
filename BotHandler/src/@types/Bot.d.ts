@@ -18,6 +18,7 @@ export interface ActiveTrade {
     stopLoss: number | null
     takeProfit: number | null
     exitPrice: number | null
+    entryTime: date | null
 }
 export interface ClosedTrade {
     side: Action
@@ -34,6 +35,7 @@ export interface Transaction {
     target: number | null
     percentageProfit: number
     profit: number
+    entryTime: String
     exitTime: String
     action: Action
 }
