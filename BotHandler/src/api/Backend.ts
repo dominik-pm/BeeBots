@@ -37,27 +37,27 @@ export async function getActiveBots(): Promise<Bot[]> {
                     stopLossDistance: 0.001,
                     tradeThreshhold: 0.75
                 } 
-                let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, risk)
+                let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, b.buyAlgo, b.positionAlgo, risk)
                 bots.push(newBot)
 
-                const testTrade: Transaction = {
-                    action: 'long',
-                    entryPrice: 69420,
-                    exitPrice: 70069,
-                    exitTime: new Date().toISOString(),
-                    percentageProfit: 0.01,
-                    profit: 2,
-                    stopLoss: 69420-(649*2),
-                    target: 70069
-                }
-                saveBotTransaction(b.botsId, testTrade, newBot.authToken)
-                .then(res => {
-                    console.log('saved tx:')
-                    console.log(res.data)
-                })
-                .catch(err => {
-                    console.log('Cant save tx to backend:', err)
-                })
+                // const testTrade: Transaction = {
+                //     action: 'long',
+                //     entryPrice: 69420,
+                //     exitPrice: 70069,
+                //     entryTime: new Date().toISOString(),
+                //     exitTime: new Date().toISOString(),
+                //     percentageProfit: 0.01,
+                //     profit: 2,
+                //     stopLoss: 69420-(649*2),
+                //     target: 70069
+                // }
+                // saveBotTransaction(b.botsId, testTrade, newBot.authToken)
+                // .then(res => {
+                //     console.log('saved tx:')
+                // })
+                // .catch(err => {
+                //     console.log('Cant save tx to backend:', err)
+                // })
             })
 
             resolve(bots)
@@ -109,7 +109,10 @@ export async function saveBotTransaction(botId: number, newTrade: Transaction, t
         // }, {'x-functions-key': backendAuthToken})
         const req: any = {
             botId,
-            trade: newTrade
+            trade: {
+                ...newTrade,
+                ticker: 'BTCUSD'
+            }
         }
         console.log(`posting new trade to backend for bot ${botId}: `, req)
 
