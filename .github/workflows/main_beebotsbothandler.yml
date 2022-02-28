@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: '14.x'
 
       - name: npm install, build, and test
         run: |
@@ -54,5 +54,5 @@ jobs:
         with:
           app-name: 'BeebotsBothandler'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F79C309BFF1E4A48BF39AC0E55574000 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_49FDBE74B7A14FD7B31DDA3F95A7CD47 }}
           package: .
