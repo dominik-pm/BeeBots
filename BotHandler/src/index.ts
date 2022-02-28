@@ -13,7 +13,6 @@ export let currentMarketData: MarketDataResponse
 
 dotenv.config({path: './variables.env'})
 
-
 console.log('Bot Handler started')
 
 const secret = process.env.ACCESS_TOKEN_SECRET
