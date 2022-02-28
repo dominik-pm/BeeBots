@@ -6,6 +6,7 @@ import { getActiveBots, saveBotTransaction } from './api/Backend'
 import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPosition } from './api/PhemexHandler'
 import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
+import { checkForBrokenServiceConnections } from './api/Api'
 // import { checkForBrokenServiceConnections } from './api/Api'
 
 const DATA_INTERVAL = 10000
@@ -47,6 +48,29 @@ async function startBotHandler() {
         validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
     
         setInterval(() => {
+
+            getActiveBots()
+            .then(newBots => {
+                let botsToAdd: Bot[] = []
+                newBots.forEach(newBot => {
+                    const botIds = bots.map(b => b.id)
+                    if (!botIds.includes(newBot.id)) {
+                        // newBot is actually a new bot!
+                        console.log('Bothandler found a new Bot!')
+                        botsToAdd.push(newBot)    
+                    }
+                })
+
+                // append all bots to add to the current bot list
+                botsToAdd.forEach(newBot => {
+                    bots.push(newBot)
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+
             getMarketData()
             .then(data => {
                 currentMarketData = data
