@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - BotHandler/**
   workflow_dispatch:
 
 jobs:
@@ -21,19 +19,19 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: '14.x'
 
       - name: npm install, build, and test
         run: |
           npm install
           npm run build --if-present
-        working-directory: BotHandler
+          npm run test --if-present
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: ./BotHandler
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -54,5 +52,5 @@ jobs:
         with:
           app-name: 'BeebotsBothandler'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F79C309BFF1E4A48BF39AC0E55574000 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_49FDBE74B7A14FD7B31DDA3F95A7CD47 }}
           package: .
