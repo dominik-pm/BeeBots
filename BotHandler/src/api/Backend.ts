@@ -17,12 +17,13 @@ export async function getActiveBots(): Promise<Bot[]> {
 
         axios.get(`${BACKEND_URL}/bots`, getAxiosRequestConfig(token, null, {'x-functions-key': backendAuthToken}))
         .then(res => {
-            console.log('backend bot result:')
+            // console.log('backend bot result:')
             const botData: BackendBotResponse[] = res.data
-            console.log(botData)
+            // console.log(botData)
             let bots: Bot[] = []
 
             botData.forEach(b => {
+                
                 // Phemex API Keys (encrypted)
                 const payload = ({ // (Testnet) -> get from backend (stored in database)
                     iv: b.encryptedApisecret,
@@ -36,9 +37,15 @@ export async function getActiveBots(): Promise<Bot[]> {
                     capitalRiskPerTrade: 0.001,
                     stopLossDistance: 0.001,
                     tradeThreshhold: 0.75
-                } 
-                let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, b.buyAlgo, b.positionAlgo, risk)
-                bots.push(newBot)
+                }
+
+                if (b.encryptedApikey && b.encryptedApikey) {
+                    let newBot: Bot = new Bot(b.botsId, authToken, permission, b.name, b.buyAlgo, b.positionAlgo, risk)
+                    bots.push(newBot)
+                } else {
+                    let newBot: Bot = new Bot(b.botsId, authToken, 'simulated', b.name, b.buyAlgo, b.positionAlgo, risk)
+                    bots.push(newBot)
+                }
 
                 // const testTrade: Transaction = {
                 //     action: 'long',

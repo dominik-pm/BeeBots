@@ -7,7 +7,32 @@ import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPositi
 import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
 import { checkForBrokenServiceConnections } from './api/Api'
-// import { checkForBrokenServiceConnections } from './api/Api'
+
+const LOG_TO_FILE = false
+
+console.log('Bot Handler starting...')
+
+// redirect console logs to file system
+var fs = require('fs')
+var util = require('util')
+const logStreamPath = __dirname + '/debug.log'
+try {
+    if (fs.existsSync(logStreamPath)) {
+        fs.unlinkSync(logStreamPath)
+    }
+} catch (err) {
+    // file does not exists
+}
+var log_file = fs.createWriteStream(logStreamPath, {flags : 'w'})
+
+if (LOG_TO_FILE) {
+    console.log = function(d) {
+        log_file.write(util.format(d) + '\n')
+    }
+    console.log('starting new log stream...')
+    console.log(new Date().toISOString())
+}
+
 
 const DATA_INTERVAL = 10000
 export let currentMarketData: MarketDataResponse
@@ -44,6 +69,7 @@ async function startBotHandler() {
     getActiveBots()
     .then(bots => {
         console.log(`Got ${bots.length} bots!`)
+        console.log(bots)
     
         validateBotAccounts(bots.filter(bot => bot.tradingPermission != 'simulated'))
     
@@ -61,6 +87,10 @@ async function startBotHandler() {
                     }
                 })
 
+                if (botsToAdd.length > 0) {
+                    console.log('found new bots in the database:')
+                    console.log(botsToAdd)
+                }
                 // append all bots to add to the current bot list
                 botsToAdd.forEach(newBot => {
                     bots.push(newBot)
@@ -212,7 +242,9 @@ function checkPosition(bot: Bot, currentPrice: number) {
 
                         if (closedFills.length == 0) {
                             console.log('could not get closed fill orders!')
-                            return
+                            // return
+                            closedFills.push(trades[0])
+                            console.log('closed fills (appended last trade): ', closedFills)
                         }
 
                         let exitPnl = 0
@@ -245,7 +277,7 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         const newTrade = bot.closedPosition(percProfit, rProfit, avgExit)
 
                         console.log(`${bot.name} trade history: `)
-                        console.log(bot.tradeHistory)
+                        console.log(bot.tradeHistory.filter((t, i) => i >= bot.tradeHistory.length - 3))
 
                         setBotBalance(bot)
                     
