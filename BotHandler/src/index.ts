@@ -7,6 +7,16 @@ import { closeAll, getAccountInfo, getClosedTrades, getMarketData, getOpenPositi
 import { connectToDatabase, saveCurrentPrice } from './database/mongoconnection'
 import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
 import { checkForBrokenServiceConnections } from './api/Api'
+import express from 'express'
+
+const PORT = 80
+const app = express()
+app.get('/', (req, res) => {
+    res.send('BotHandler running')
+})
+app.listen(PORT, () => {
+    console.log('BotHandler webservice running!')
+})
 
 const LOG_TO_FILE = false
 
