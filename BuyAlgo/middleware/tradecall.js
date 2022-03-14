@@ -7,6 +7,14 @@ const algs = {
     '2': {
         getTradeCall: require('./algorithm/funding').getTradeCall,
         algDataSchema: require('./algorithm/funding').algDataSchema
+    },
+    '3': {
+        getTradeCall: require('./algorithm/dailyhighlow').getTradeCall,
+        algDataSchema: require('./algorithm/dailyhighlow').algDataSchema
+    },
+    '4': {
+        getTradeCall: require('./algorithm/dailyhighlow2').getTradeCall,
+        algDataSchema: require('./algorithm/dailyhighlow2').algDataSchema
     }
 }
 
