@@ -9,13 +9,13 @@ import { btcAmountToEvAmount, evAmountToBTCAmount } from './helper'
 import { checkForBrokenServiceConnections } from './api/Api'
 import express from 'express'
 
-const PORT = 80
+const PORT = process.env.PORT || 3000
 const app = express()
 app.get('/', (req, res) => {
     res.send('BotHandler running')
 })
 app.listen(PORT, () => {
-    console.log('BotHandler webservice running!')
+    console.log(`BotHandler webservice running at localhost:${PORT}!`)
 })
 
 const LOG_TO_FILE = false
