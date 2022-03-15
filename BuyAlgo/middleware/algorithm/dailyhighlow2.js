@@ -1,18 +1,18 @@
 const Joi = require('joi')
 
 const algDataSchema = Joi.object({
-    dailyHigh: Joi.number().greater(0),
-    dailyLow: Joi.number().greater(0),
-    currentPrice: Joi.number().greater(0)
+    high: Joi.number().greater(0).required(),
+    low: Joi.number().greater(0).required(),
+    currentPrice: Joi.number().greater(0).required()
 })
 
 // buy when price is closer to daily high
 // sell when price is closer to daily low
 function getTradeCall(marketData) {
-    const { dailyHigh, dailyLow, currentPrice } = marketData
+    const { high, low, currentPrice } = marketData
 
-    const lowDist = Math.abs(currentPrice - dailyLow)
-    const highDist = Math.abs(currentPrice - dailyHigh)
+    const lowDist = Math.abs(currentPrice - low)
+    const highDist = Math.abs(currentPrice - high)
 
     let action = 'Buy'
     if (lowDist < highDist) {
@@ -23,8 +23,8 @@ function getTradeCall(marketData) {
         action = 'Buy'
     }
     
-    const dist = Math.abs(currentPrice - (action == 'Buy' ? dailyHigh : dailyLow))
-    const doubleMaxDist = Math.abs(dailyLow - dailyHigh)
+    const dist = Math.abs(currentPrice - (action == 'Buy' ? high : low))
+    const doubleMaxDist = Math.abs(low - high)
     const extraConfidence = 2*(dist/doubleMaxDist)
 
     return {

@@ -25,6 +25,8 @@ function tradeCall(req, res, next) {
 
     const { getTradeCall, algDataSchema } = algs[algo] || defaultAlg
 
+    console.log('alg data schema', algDataSchema)
+
     const { value, error, warning } = algDataSchema.validate(req.body, {allowUnknown: true})
 
     if (warning) {
