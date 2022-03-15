@@ -34,7 +34,7 @@ export async function getActiveBots(): Promise<Bot[]> {
 
                 const permission: TradingPermission = payload.isLivenet ? 'live' : 'testnet'
                 const risk: RiskProfile = {
-                    capitalRiskPerTrade: 0.001,
+                    capitalRiskPerTrade: 0.02,
                     stopLossDistance: 0.001,
                     tradeThreshhold: 0.75
                 }
