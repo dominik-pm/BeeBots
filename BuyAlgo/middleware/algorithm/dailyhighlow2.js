@@ -23,7 +23,7 @@ function getTradeCall(marketData) {
         action = 'Buy'
     }
     
-    const dist = Math.abs(currentPrice - (action == 'Buy' ? dailyLow : dailyHigh))
+    const dist = Math.abs(currentPrice - (action == 'Buy' ? dailyHigh : dailyLow))
     const doubleMaxDist = Math.abs(dailyLow - dailyHigh)
     const extraConfidence = 2*(dist/doubleMaxDist)
 
