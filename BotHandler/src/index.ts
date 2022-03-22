@@ -248,13 +248,13 @@ function checkPosition(bot: Bot, currentPrice: number) {
                         console.log(trades[0])
                         const closedFills = trades.filter(trade => trade.transactTimeNs > entryFill.transactTimeNs && trade.quantity == entryFill.quantity)
                         
-                        console.log('closed fills:', closedFills.filter((v, i) => i < 5))
+                        console.log('closed fills:', closedFills.filter((v, i) => i < 3))
 
                         if (closedFills.length == 0) {
                             console.log('could not get closed fill orders!')
                             // return
                             closedFills.push(trades[0])
-                            console.log('closed fills (appended last trade): ', closedFills)
+                            console.log('closed fills (appended last trade): ', closedFills.filter((v, i) => i < 3))
                         }
 
                         let exitPnl = 0
@@ -447,7 +447,7 @@ function botClosePosition(bot: Bot, closedTrade: ClosedTrade) {
     const newTrade = bot.closedPosition(percProfit, rProfit, closedTrade.exitPrice)
 
     console.log(`${bot.name} trade history: `)
-    console.log(bot.tradeHistory)
+    console.log(bot.tradeHistory.filter((t, i) => i >= bot.tradeHistory.length - 3))
 
     if (newTrade) {
         saveBotTransaction(bot.id, newTrade, bot.authToken)
