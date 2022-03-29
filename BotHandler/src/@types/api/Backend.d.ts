@@ -6,5 +6,6 @@ export interface BackendBotResponse {
     encryptedApikey: string,
     encryptedApisecret: string,
     buyAlgo: number,
-    positionAlgo: number
+    positionAlgo: number,
+    isTestNet: number
 }

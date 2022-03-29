@@ -28,7 +28,7 @@ export async function getActiveBots(): Promise<Bot[]> {
                 const payload = ({ // (Testnet) -> get from backend (stored in database)
                     iv: b.encryptedApisecret, // TODO: swap these
                     encryptedData: b.encryptedApikey,
-                    isLivenet: false
+                    isLivenet: b.isTestNet == 0
                 })
                 const authToken = jwt.sign(payload, secretToken)
 
