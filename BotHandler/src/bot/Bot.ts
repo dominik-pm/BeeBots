@@ -10,7 +10,7 @@ import { closeAll } from '../api/PhemexHandler'
 const defaultRiskProfile: RiskProfile = {
     tradeThreshhold: 0.5,           // minimum confidence to execute a trade
     capitalRiskPerTrade: 0.02,      // percentag of total capital to risk per trade
-    stopLossDistance: 0.001         // percentage from the current price to the stoploss
+    stopLossDistance: 0.005         // percentage from the current price to the stoploss
 }
 
 export default class Bot {
