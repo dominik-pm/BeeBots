@@ -26,7 +26,7 @@ export async function getActiveBots(): Promise<Bot[]> {
                 
                 // Phemex API Keys (encrypted)
                 const payload = ({ // (Testnet) -> get from backend (stored in database)
-                    iv: b.encryptedApisecret,
+                    iv: b.encryptedApisecret, // TODO: swap these
                     encryptedData: b.encryptedApikey,
                     isLivenet: false
                 })
@@ -35,8 +35,8 @@ export async function getActiveBots(): Promise<Bot[]> {
                 const permission: TradingPermission = payload.isLivenet ? 'live' : 'testnet'
                 const risk: RiskProfile = {
                     capitalRiskPerTrade: 0.02,
-                    stopLossDistance: 0.001,
-                    tradeThreshhold: 0.75
+                    stopLossDistance: 0.005,
+                    tradeThreshhold: 0.7
                 }
 
                 if (b.encryptedApikey && b.encryptedApikey) {
